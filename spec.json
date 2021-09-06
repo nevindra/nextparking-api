@@ -1,0 +1,335 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Next Parking API",
+    "description": "API description in Markdown.",
+    "version": "1.1.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8181/api"
+    }
+  ],
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Returns a list of users.",
+        "description": "Will return all registered users available.",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Returns a user.",
+        "description": "Will return a single user from database.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "To get the user by id."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Delete single user from database",
+        "description": "Will delete a single user by id from paths",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "To get the user by id."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "Users"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "description": "To get the user by id."
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "description": "To change user full name."
+          },
+          {
+            "name": "phone_number",
+            "in": "query",
+            "description": "To change user phone number."
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/login": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Login user from query",
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "device_token",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/registration": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Create new user",
+        "parameters": [
+          {
+            "name": "full_name",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "password",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "phone_number",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "verification_pin",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "CREATED"
+          }
+        }
+      }
+    },
+    "/verification-mail": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "To be Added",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/forgot-password": {
+      "post": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "To be Added",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/vehicles": {
+      "get": {
+        "tags": [
+          "Vehicles"
+        ],
+        "summary": "Return a list of all vehicles",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/vehicles/{id}": {
+      "get": {
+        "tags": [
+          "Vehicles"
+        ],
+        "summary": "Return a list of vehicles for specific user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a vehicles for spesific user",
+        "tags": [
+          "Vehicles"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/register-vehicles": {
+      "post": {
+        "tags": [
+          "Vehicles"
+        ],
+        "summary": "Register new vehicle for certain user",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "plate_number",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "car_type",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "CREATED"
+          }
+        }
+      }
+    },
+    "/transactions/{id}": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Get all transactions for a single user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "ID of user",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/confirm-pin": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "To confirm identity of user",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Wrong Password"
+          }
+        }
+      }
+    },
+    "/topup": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Top up user saldo",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}
