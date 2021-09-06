@@ -302,12 +302,72 @@
         }
       }
     },
+    "/topup/:id": {
+      "get": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "Get all top up history from a user",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        }
+      }
+    },
+    "/payment": {
+      "post": {
+        "tags": [
+          "Transactions"
+        ],
+        "summary": "To pay active transactions",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "verification_token",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/confirm-pin": {
       "post": {
         "tags": [
           "Transactions"
         ],
         "summary": "To confirm identity of user",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "verification_pin",
+            "in": "query",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -324,6 +384,28 @@
           "Transactions"
         ],
         "summary": "Top up user saldo",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "amount",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "payment_method",
+            "in": "query",
+            "required": true
+          },
+          {
+            "name": "verification_pin",
+            "in": "query",
+            "required": true
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"

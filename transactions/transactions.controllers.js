@@ -1,4 +1,3 @@
-const client = require('../database/database');
 const repoUser = require('../users/user.repo')
 const repo = require('./transactions.repo')
 
@@ -8,10 +7,10 @@ exports.payTransaction = async (req, res) => {
     try {
         const isAuth = await repo.verification(id_user, verification_pin)
         if (isAuth) {
-            // get all transaction price to be calculated with current balance
             const user = await repoUser.findUserByID(id_user)
+            // get all transaction price to be calculated with current balance
             const userTransaction = await repo.getAllTransactionPrice(id_user)
-            if (typeof userTransaction.rows[0] === 'undefined') return res.status(404).send({'response': 'There are no transaction for you.'})
+            if (typeof userTransaction.rows[0] === 'undefined') return res.status(404).send({'response': 'There are no active transaction for you.'})
             // pay the transaction
             await repo.payTransaction(id_user)
             // update user balance
@@ -37,11 +36,11 @@ exports.confirmPin = async (req, res) => {
     }
 };
 
-exports.historyTransaction = async (req, res) => {
-    const {id_user} = req.params.id
+exports.historyPaymentTransaction = async (req, res) => {
+    const id_user = req.params.id
     const {status} = req.body
     try {
-        const user = repo.getAllTransaction(id_user, status)
+        const user = repo.getHistoryParking(id_user, status)
         if (typeof user.rows[0] === 'undefined') {
             return res.status(404).send();
         } else {
@@ -54,17 +53,28 @@ exports.historyTransaction = async (req, res) => {
     }
 }
 
+exports.historyTopUpPayment = async (req, res) => {
+    const id_user = req.params.id;
+
+    try {
+        const historyTopUp = await repo.getAllTopUpTransaction(id_user)
+        res.status(200).send(historyTopUp.rows)
+    } catch (e) {
+        console.log(e)
+        res.status(500).send()
+    }
+}
+
 exports.topUp = async (req, res) => {
-    const {id_user, amount, card_number, verification_pin} = req.body;
+    const {id_user, amount, payment_method, verification_pin} = req.body;
     /*TODO:
     *   1. Need to be fixed soon.*/
 
     try {
         const isAuth = await repo.verification(id_user, verification_pin)
         if (isAuth) {
-            const userBalance = await repoUser.findUserByID(id_user)
-            const saldo = userBalance.rows[0].balance + amount
-            await repo.updateBalance(id_user, saldo)
+            // user enter amount -> saved to database -> get sum of all recharge amount -> insert into users
+            await repo.updateBalance(id_user, amount, payment_method)
 
             return res.status(200).send({'response': 'Topup succeeded'});
         }

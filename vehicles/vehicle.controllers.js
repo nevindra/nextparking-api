@@ -1,4 +1,5 @@
 const repo = require('./vehicle.repo')
+
 exports.registerVehicle = async (req, res) => {
     /* TODO:
     *   1. Add vehicle image to Google Cloud Storage
