@@ -11,7 +11,7 @@ db.findUserByEmail = async (email) => {
 }
 
 db.findUserByID = async (id_user) => {
-    return await client.query('SELECT * FROM users WHERE email = $1', [id_user])
+    return await client.query('SELECT * FROM users WHERE id_user = $1', [id_user])
 }
 
 db.loginUser = async (full_name, email, encryptedPassword, phone_number, encryptedVerification) => {
@@ -30,7 +30,7 @@ db.deleteUser = async (id_user) => {
 }
 
 db.updateFullName = async (id_user, full_name) => {
-    return await client.query('UPDATE users SET full_name = $1 WHERE id_user = $1', [full_name, , id_user])
+    return await client.query('UPDATE users SET full_name = $1 WHERE id_user = $1', [full_name, id_user])
 }
 
 db.updatePhoneNumber = async (id_user, phone_number) => {

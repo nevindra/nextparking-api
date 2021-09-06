@@ -14,7 +14,9 @@ exports.getUsers = async (req, res) => {
 exports.getUserByID = async (req, res) => {
     const id_user = req.params.id;
     try {
-        const user = await repo.findUserByEmail(id_user)
+        console.log(id_user)
+        const user = await repo.findUserByID(id_user)
+        console.log(user.rows)
         if (typeof user.rows[0] === 'undefined') return res.status(404).send({'response': 'user not found'});
         res.status(200).send(user.rows[0]);
     } catch (e) {

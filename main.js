@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const multer = require('multer');
-const db = require('./database/database')
 const helmet = require('helmet')
 const fs = require("fs");
 const path = require("path");
@@ -18,6 +17,11 @@ if (process.env.NODE_ENV === 'deployment') {
             })
     }
 }
+
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 const {fileStorage, fileFilter} = require('./utility/multer')
 const PORT = process.env.PORT;
