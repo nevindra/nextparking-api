@@ -11,7 +11,8 @@ db.findUserByEmail = async (email) => {
 }
 
 db.findUserByID = async (id_user) => {
-    return await client.query('SELECT * FROM users WHERE id_user = $1', [id_user])
+    const user = await client.query('SELECT * FROM users WHERE id_user = $1', [id_user])
+    return user.rows[0]
 }
 
 db.loginUser = async (full_name, email, encryptedPassword, phone_number, encryptedVerification) => {

@@ -51,7 +51,7 @@ app.use('/api/', transactionRoutes);
 
 const server = app.listen(process.env.PORT, err => {
     if (err) return console.log(err);
-    console.log(`Connected to port ${PORT} `)
+    console.log(`⚡ Connected to http://localhost:${PORT} ⚡`)
 });
 
 

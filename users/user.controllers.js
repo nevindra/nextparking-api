@@ -1,5 +1,7 @@
 const bcrypt = require("bcrypt");
 const repo = require('./user.repo')
+const nodemailer = require("nodemailer");
+const mongoose = require('mongoose');
 
 exports.getUsers = async (req, res) => {
     try {
@@ -16,8 +18,8 @@ exports.getUserByID = async (req, res) => {
     try {
         console.log(id_user)
         const user = await repo.findUserByID(id_user)
-        console.log(user.rows)
-        if (typeof user.rows[0] === 'undefined') return res.status(404).send({'response': 'user not found'});
+        console.log(user)
+        if (typeof user === 'undefined') return res.status(404).send({'response': 'user not found'});
         res.status(200).send(user.rows[0]);
     } catch (e) {
         console.log(e)
@@ -100,4 +102,39 @@ exports.editUser = async (req, res) => {
         res.status(400).send();
     }
 };
+
+exports.sendToken = async (req, res) => {
+    const id = req.params.id
+    const {type} = req.body
+    const user = repo.findUserByID(id)
+    let Registration = require('./mongo-model/user.models')
+    if (user) {
+        try {
+            let token = Math.floor(Math.random() * 10000)
+            const Register = new Registration({email: user.email, token: token, type: type})
+            await Register.save()
+            const transporter = nodemailer.createTransport({
+                host: process.env.HOST,
+                service: process.env.SERVICE,
+                port: 587,
+                secure: true,
+                auth: {
+                    user: process.env.USER,
+                    pass: process.env.PASS,
+                },
+            });
+
+            await transporter.sendMail({
+                from: process.env.USER,
+                to: user.rows[0].email,
+                subject: "Forgot Password",
+                text: "text",
+            });
+
+            console.log("email sent successfully");
+        } catch (e) {
+
+        }
+    }
+}
 

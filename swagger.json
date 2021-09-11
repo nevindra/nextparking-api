@@ -8,6 +8,9 @@
   "servers": [
     {
       "url": "http://localhost:8181/api"
+    },
+    {
+      "url": "http://35.219.32.97/api"
     }
   ],
   "paths": {
@@ -37,7 +40,10 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "description": "To get the user by id."
+            "description": "To get the user by id.",
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -190,6 +196,15 @@
           "Users"
         ],
         "summary": "To be Added",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "description": "OK"
