@@ -50,8 +50,8 @@ exports.getSingleVehicle = async (req, res) => {
     const {id_user, id_vehicle} = req.params
     try {
         const results = await repo.getSingleVehicle(id_user, id_vehicle)
-        if (typeof results.rows[0] === 'undefined') return res.status(400).send({'response': 'Vehicle not found.'})
-        res.status(200).send(results.rows[0]);
+        if (typeof results === 'undefined') return res.status(400).send({'response': 'Vehicle not found.'})
+        res.status(200).send(results);
     } catch (e) {
         console.log(e);
         res.status(500).send();
@@ -63,7 +63,7 @@ exports.deleteVehicleById = async (req, res) => {
 
     try {
         const result = repo.deleteVehicleById(id_user, id_vehicle)
-        if (typeof result.rows[0] === 'undefined') {
+        if (typeof result === 'undefined') {
             res.status(404).send();
         }
 

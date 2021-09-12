@@ -225,7 +225,7 @@
         }
       }
     },
-    "/vehicles/{id}": {
+    "/vehicles/{id_user}": {
       "get": {
         "tags": [
           "Vehicles"
@@ -262,6 +262,34 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    },
+    "/vehicles/{id_user}/{id_vehicle}": {
+      "get": {
+        "tags": [
+          "Vehicles"
+        ],
+        "summary": "Return a list of vehicles for specific user and vehicle",
+        "parameters": [
+          {
+            "name": "id_user",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "id_vehicle",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "404": {
+            "description": "Not Found"
           }
         }
       }

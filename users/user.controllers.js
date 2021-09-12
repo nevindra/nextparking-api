@@ -20,7 +20,7 @@ exports.getUserByID = async (req, res) => {
         const user = await repo.findUserByID(id_user)
         console.log(user)
         if (typeof user === 'undefined') return res.status(404).send({'response': 'user not found'});
-        res.status(200).send(user.rows[0]);
+        res.status(200).send(user);
     } catch (e) {
         console.log(e)
         res.status(500).send();
@@ -38,7 +38,7 @@ exports.postRegistration = async (req, res) => {
         const encryptedPassword = bcrypt.hashSync(password, salt);
         const encryptedVerification = bcrypt.hashSync(verification_pin, salt);
 
-        await repo.loginUser(full_name, email, encryptedPassword, phone_number, encryptedVerification)
+        await repo.registerUser(full_name, email, encryptedPassword, phone_number, encryptedVerification)
 
         return res.status(201).send({'response': 'succeeded'});
     } catch
@@ -53,12 +53,12 @@ exports.loginUser = async (req, res) => {
 
     try {
         const user = await repo.findUserByEmail(email)
-        if (typeof user.rows[0] === 'undefined') return res.status(404).send({'response': 'user not found'});
-        const isAuth = await bcrypt.compareSync(password, user.rows[0].password);
-        let id_user = user.rows[0].id_user;
+        if (typeof user === 'undefined') return res.status(404).send({'response': 'user not found'});
+        const isAuth = await bcrypt.compareSync(password, user.password);
+        let id_user = user.id_user;
         if (isAuth) {
             await repo.updateDeviceToken(id_user, device_token)
-            return res.status(200).send(user.rows[0]);
+            return res.status(200).send(user);
         } else {
             return res.status(401).send({'response': 'wrong password'});
         }
@@ -123,17 +123,27 @@ exports.sendToken = async (req, res) => {
                     pass: process.env.PASS,
                 },
             });
+            if (type === 'FORGOT') {
+                await transporter.sendMail({
+                    from: process.env.USER,
+                    to: user.email,
+                    subject: "Forgot Password",
+                    text: `Your token is ${token}`,
+                });
+            } else if (type === 'VERIFICATION') {
+                await transporter.sendMail({
+                    from: process.env.USER,
+                    to: user.email,
+                    subject: "Verification",
+                    text: `Your token is ${token}`,
+                });
+            }
 
-            await transporter.sendMail({
-                from: process.env.USER,
-                to: user.rows[0].email,
-                subject: "Forgot Password",
-                text: "text",
-            });
 
-            console.log("email sent successfully");
+            res.status(200).send({"response": "email sent successfully"});
         } catch (e) {
-
+            console.log(e)
+            res.status(500).send()
         }
     }
 }

@@ -15,11 +15,13 @@ db.getAllVehicles = async () => {
 
 db.getUserVehicles = async (id_user) => {
     // search for vehicles based on the user
-    return await client.query('SELECT * FROM user_vehicle WHERE id_user = $1', [id_user]);
+    const vehicle = await client.query('SELECT * FROM user_vehicle WHERE id_user = $1', [id_user]);
+    return vehicle.rows[0]
 }
 
 db.getSingleVehicle = async (id_user, id_vehicle) => {
-    return await client.query('SELECT * FROM user_vehicle WHERE id_user = $1 AND id_vehicle = $2', [id_user, id_vehicle]);
+    const vehicle = await client.query('SELECT * FROM user_vehicle WHERE id_user = $1 AND id_vehicle = $2', [id_user, id_vehicle]);
+    return vehicle.rows[0]
 }
 
 db.deleteVehicleById = async (id_user, id_vehicle) => {
