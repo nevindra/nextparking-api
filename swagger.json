@@ -23,7 +23,44 @@
         "description": "Will return all registered users available.",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/users"
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "description": "Success get all users",
+                    "value": [
+                      {
+                        "id_user": 1,
+                        "full_name": "Anna Karenina Jusuf",
+                        "phone_number": "1122336",
+                        "email": "akarenina25@gmail.com",
+                        "password": "$2b$12$6EWNxS4wXfPauPZs.m3KXuTS0XaPizAYNKh2ZcNHE/yx3bx6u4xC.",
+                        "verification_pin": "$2b$12$6EWNxS4wXfPauPZs.m3KXuG1mS/LYM.MdsUJkzkEXZDL/nPAXfP2m",
+                        "device_token": "ddd",
+                        "balance": 0
+                      },
+                      {
+                        "id_user": 2,
+                        "full_name": "Sahir Syatha",
+                        "phone_number": "087785255146",
+                        "email": "sahirsyatha77@gmail.com",
+                        "password": "$2b$12$yLuMtOLTvXoJA5BpHbgl5.hkqe9eRYjJyW1WU/VwEhcr91l8/1BdW",
+                        "verification_pin": "$2b$12$yLuMtOLTvXoJA5BpHbgl5.6pZ1mU8ikABT19HW6Qkl0yOKf5mpZsO",
+                        "device_token": "e_0IXVmqSwqVMhWBdVqabM:APA91bHfrUzS7E-ynPDftfYiQDRRPvrwYsqPUtJKiMB9jTOlDLlw-pQPNiVjkbacKdmFVo1OWRC6sVNlIdfZUTqt04vu3FNkmtxlIgkeaumlwjHrCxaN6-F9dn8xQe6IXcqJCnbBuyMA",
+                        "balance": 0
+                      }
+                    ]
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -48,7 +85,55 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id_user": {
+                      "type": "string"
+                    },
+                    "full_name": {
+                      "type": "string"
+                    },
+                    "phone_number": {
+                      "type": "string"
+                    },
+                    "email": {
+                      "type": "string"
+                    },
+                    "password": {
+                      "type": "string"
+                    },
+                    "verification_pin": {
+                      "type": "string"
+                    },
+                    "device_token": {
+                      "type": "string"
+                    },
+                    "balance": {
+                      "type": "integer"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "description": "Success get one user",
+                    "value": {
+                      "id_user": 1,
+                      "full_name": "Anna Karenina Jusuf",
+                      "phone_number": "1122336",
+                      "email": "akarenina25@gmail.com",
+                      "password": "$2b$12$6EWNxS4wXfPauPZs.m3KXuTS0XaPizAYNKh2ZcNHE/yx3bx6u4xC.",
+                      "verification_pin": "$2b$12$6EWNxS4wXfPauPZs.m3KXuG1mS/LYM.MdsUJkzkEXZDL/nPAXfP2m",
+                      "device_token": "ddd",
+                      "balance": 0
+                    }
+                  }
+                }
+              }
+            }
           },
           "404": {
             "description": "Not Found"
@@ -113,26 +198,62 @@
           "Users"
         ],
         "summary": "Login user from query",
-        "parameters": [
-          {
-            "name": "email",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "device_token",
-            "in": "query",
-            "required": true
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "device_token": {
+                    "type": "string"
+                  }
+                }
+              },
+              "examples": {
+                "Nevindra": {
+                  "description": "Example of login user",
+                  "value": {
+                    "email": "nevindraibnazhifi@gmail.com",
+                    "password": "2fuckingco0l",
+                    "device_token": 1234
+                  }
+                }
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/users"
+                },
+                "examples": {
+                  "success": {
+                    "description": "Success get one user",
+                    "value": {
+                      "id_user": 4,
+                      "full_name": "Nevindra Ibnazhifi",
+                      "phone_number": "082213656160",
+                      "email": "nevindraibnazhifi@gmail.com",
+                      "password": "$2b$12$KX6hnoEMj.HlvrYtlNuLOORign5JmCFh3igaJlffLp3Of.Q0w8EQy",
+                      "verification_pin": "$2b$12$KX6hnoEMj.HlvrYtlNuLOOlLrS.T9n1FmPJWFVMT8IDiLxJTPT7Ze",
+                      "device_token": "1234",
+                      "balance": 0
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -143,33 +264,33 @@
           "Users"
         ],
         "summary": "Create new user",
-        "parameters": [
-          {
-            "name": "full_name",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "email",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "password",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "phone_number",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "verification_pin",
-            "in": "query",
-            "required": true
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "full_name": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string"
+                  },
+                  "password": {
+                    "type": "string"
+                  },
+                  "phone_number": {
+                    "type": "string"
+                  },
+                  "verification_pin": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "201": {
             "description": "CREATED"
@@ -300,28 +421,27 @@
           "Vehicles"
         ],
         "summary": "Register new vehicle for certain user",
-        "parameters": [
-          {
-            "name": "id_user",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "plate_number",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "car_type",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "img_stnk",
-            "in": "query",
-            "description": "Use file object. No need to fill it in swagger but must be filled in postman / real use case."
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_user": {
+                    "type": "integer"
+                  },
+                  "plate_number": {
+                    "type": "string"
+                  },
+                  "car_type": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "201": {
             "description": "CREATED"
@@ -457,6 +577,39 @@
         "responses": {
           "200": {
             "description": "OK"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "users": {
+        "type": "object",
+        "properties": {
+          "id_user": {
+            "type": "string"
+          },
+          "full_name": {
+            "type": "string"
+          },
+          "phone_number": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          },
+          "verification_pin": {
+            "type": "string"
+          },
+          "device_token": {
+            "type": "string"
+          },
+          "balance": {
+            "type": "integer"
           }
         }
       }

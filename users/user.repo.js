@@ -3,7 +3,7 @@ const client = require('../database/database')
 let db = {}
 
 db.findUsers = async () => {
-    return await client.query('SELECT * FROM users')
+    return await client.query('SELECT * FROM users ORDER BY id_user')
 }
 
 db.findUserByEmail = async (email) => {

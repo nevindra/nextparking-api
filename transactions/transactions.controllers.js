@@ -71,7 +71,7 @@ exports.topUp = async (req, res) => {
     const {id_user, amount, payment_method, verification_pin} = req.body;
     /*TODO:
     *   1. Need to be fixed soon.*/
-
+    console.log(id_user)
     try {
         const isAuth = await repo.verification(id_user, verification_pin)
         if (isAuth) {

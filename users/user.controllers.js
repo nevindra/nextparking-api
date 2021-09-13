@@ -16,9 +16,7 @@ exports.getUsers = async (req, res) => {
 exports.getUserByID = async (req, res) => {
     const id_user = req.params.id;
     try {
-        console.log(id_user)
         const user = await repo.findUserByID(id_user)
-        console.log(user)
         if (typeof user === 'undefined') return res.status(404).send({'response': 'user not found'});
         res.status(200).send(user);
     } catch (e) {
@@ -32,14 +30,13 @@ exports.postRegistration = async (req, res) => {
     const saltRounds = 12;
     try {
         const checkUser = await repo.findUserByEmail(email)
-        if (checkUser.length >= 1) return res.status(409)
+        if (checkUser) return res.status(409)
             .send({'response': 'user found. cant make double account for the same person'})
         const salt = bcrypt.genSaltSync(saltRounds);
         const encryptedPassword = bcrypt.hashSync(password, salt);
         const encryptedVerification = bcrypt.hashSync(verification_pin, salt);
 
         await repo.registerUser(full_name, email, encryptedPassword, phone_number, encryptedVerification)
-
         return res.status(201).send({'response': 'succeeded'});
     } catch
         (e) {
@@ -50,15 +47,13 @@ exports.postRegistration = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
     const {email, password, device_token} = req.body;
-
+    console.log(email)
     try {
         const user = await repo.findUserByEmail(email)
-        console.log(user)
-        if (typeof user === 'undefined') return res.status(404).send({'response': 'user not found'});
+        if (!user) return res.status(404).send({'response': 'user not found'});
         const isAuth = await bcrypt.compareSync(password, user.password);
-        let id_user = user.id_user;
         if (isAuth) {
-            await repo.updateDeviceToken(id_user, device_token)
+            await repo.updateDeviceToken(user.id_user, device_token)
             return res.status(200).send(user);
         } else {
             return res.status(401).send({'response': 'wrong password'});
