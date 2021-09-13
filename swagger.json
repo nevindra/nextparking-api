@@ -315,6 +315,11 @@
             "name": "car_type",
             "in": "query",
             "required": true
+          },
+          {
+            "name": "img_stnk",
+            "in": "query",
+            "description": "Use file object. No need to fill it in swagger but must be filled in postman / real use case."
           }
         ],
         "responses": {
