@@ -2,10 +2,10 @@ const client = require('../database/database')
 
 let db = {}
 
-db.registerVehicle = async (id_user, plate_number, car_type, imageUrl) => {
+db.registerVehicle = async (id_user, plate_number, car_type) => {
     await client.query(
-        'INSERT INTO user_vehicle(id_user,plate_number,car_type,img_stnk) VALUES($1,$2,$3,$4)',
-        [id_user, plate_number, car_type, imageUrl]
+        'INSERT INTO user_vehicle(id_user,plate_number,car_type) VALUES($1,$2,$3)',
+        [id_user, plate_number, car_type]
     )
 }
 

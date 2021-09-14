@@ -5,11 +5,11 @@ exports.registerVehicle = async (req, res) => {
     *   1. Add vehicle image to Google Cloud Storage
     * */
     const {id_user, plate_number, car_type} = req.body
-    const image = req.file;
-    const imageUrl = image.path;
+    // const image = req.file;
+    // const imageUrl = image.path;
 
     try {
-        await repo.registerVehicle(id_user, plate_number, car_type, imageUrl)
+        await repo.registerVehicle(id_user, plate_number, car_type)
         res.status(201).send({
             'response': 'succeeded',
             'data': {
@@ -32,7 +32,6 @@ exports.getAllVehicles = async (req, res) => {
         console.log(e)
         res.status(400).send(e);
     }
-
 }
 
 exports.getUserVehicles = async (req, res) => {

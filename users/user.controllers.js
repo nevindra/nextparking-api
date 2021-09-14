@@ -135,7 +135,6 @@ exports.sendToken = async (req, res) => {
                 });
             }
 
-
             res.status(200).send({"response": "email sent successfully"});
         } catch (e) {
             console.log(e)

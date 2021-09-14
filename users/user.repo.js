@@ -17,11 +17,10 @@ db.findUserByID = async (id_user) => {
 }
 
 db.registerUser = async (full_name, email, encryptedPassword, phone_number, encryptedVerification) => {
-    const user = await client.query(
+    await client.query(
         'INSERT INTO users(full_name,email,password,phone_number,verification_pin, balance) VALUES($1,$2,$3,$4,$5,0)',
         [full_name, email, encryptedPassword, phone_number, encryptedVerification]
     );
-    return user.rows[0]
 }
 
 db.updateDeviceToken = async (id_user, device_token) => {

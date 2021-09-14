@@ -341,7 +341,14 @@
         "summary": "Return a list of all vehicles",
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/vehicles"
+                }
+              }
+            }
           }
         }
       }
@@ -361,7 +368,14 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/vehicles"
+                }
+              }
+            }
           },
           "404": {
             "description": "Not Found"
@@ -382,7 +396,14 @@
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/vehicles"
+                }
+              }
+            }
           }
         }
       }
@@ -610,6 +631,29 @@
           },
           "balance": {
             "type": "integer"
+          }
+        }
+      },
+      "vehicles": {
+        "type": "object",
+        "properties": {
+          "id_user": {
+            "type": "integer"
+          },
+          "id_vehicle": {
+            "type": "integer"
+          },
+          "plate_number": {
+            "type": "string"
+          },
+          "car_type": {
+            "type": "string"
+          },
+          "last_parking": {
+            "type": "string"
+          },
+          "isVerified": {
+            "type": "boolean"
           }
         }
       }
