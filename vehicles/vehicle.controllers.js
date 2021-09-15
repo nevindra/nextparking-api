@@ -38,7 +38,7 @@ exports.getUserVehicles = async (req, res) => {
     const {id_user} = req.params
     try {
         const results = await repo.getUserVehicles(id_user)
-        res.send(results.rows);
+        res.send(results);
     } catch (e) {
         console.log(e);
         res.status(500).send();

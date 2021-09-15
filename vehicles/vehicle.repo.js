@@ -16,7 +16,7 @@ db.getAllVehicles = async () => {
 db.getUserVehicles = async (id_user) => {
     // search for vehicles based on the user
     const vehicle = await client.query('SELECT * FROM user_vehicle WHERE id_user = $1', [id_user]);
-    return vehicle.rows[0]
+    return vehicle.rows
 }
 
 db.getSingleVehicle = async (id_user, id_vehicle) => {

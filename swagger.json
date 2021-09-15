@@ -361,7 +361,7 @@
         "summary": "Return a list of vehicles for specific user",
         "parameters": [
           {
-            "name": "id",
+            "name": "id_user",
             "in": "path",
             "required": true
           }
