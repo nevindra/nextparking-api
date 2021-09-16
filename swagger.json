@@ -520,21 +520,50 @@
           "Transactions"
         ],
         "summary": "To pay active transactions",
-        "parameters": [
-          {
-            "name": "id_user",
-            "in": "query",
-            "required": true
-          },
-          {
-            "name": "verification_token",
-            "in": "query",
-            "required": true
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id_user": {
+                    "type": "integer"
+                  },
+                  "id_transaction": {
+                    "type": "integer"
+                  },
+                  "verification_pin": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
           }
-        ],
+        },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "response": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "description": "Success get all users",
+                    "value": {
+                      "response": "Payment success"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -599,7 +628,27 @@
         },
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "response": {
+                      "type": "string"
+                    }
+                  }
+                },
+                "examples": {
+                  "success": {
+                    "description": "Success get all users",
+                    "value": {
+                      "response": "Top up success"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
