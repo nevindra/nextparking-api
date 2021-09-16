@@ -35,7 +35,7 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-app.use(helmet());
+// app.use(helmet());
 app.use(express.urlencoded({extended: false, limit: '50mb'}))
 app.use(multer({
     storage: fileStorage, fileFilter: fileFilter

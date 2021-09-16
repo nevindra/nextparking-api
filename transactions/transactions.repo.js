@@ -41,13 +41,13 @@ db.updateBalance = async (id_user, amount, payment_method) => {
     const date = new Date()
     const currentDate = convertTZ(date, "Asia/Jakarta")
     await client.query(
-        'INSERT INTO user_topup(id_user, amount, payment_method, createdAt) VALUES ($1, $2, $3,$4)', [id_user, amount, payment_method, currentDate]
+        'INSERT INTO user_topup(id_user, amount, payment_method, created) VALUES ($1, $2, $3,$4)', [id_user, amount, payment_method, currentDate]
     )
 
-    const currentBalance = await client.query('SELECT id_user, SUM(amount) FROM user_recharge WHERE id_user = $1 GROUP BY id_user', [id_user])
+    const currentBalance = await client.query('SELECT id_user, SUM(amount) FROM user_topup WHERE id_user = $1 GROUP BY id_user', [id_user])
 
     await client.query(
-        'UPDATE users SET balance = $1 WHERE id_user = $2', [currentBalance, id_user]
+        'UPDATE users SET balance = $1 WHERE id_user = $2', [currentBalance.rows[0].sum, id_user]
     );
 }
 
