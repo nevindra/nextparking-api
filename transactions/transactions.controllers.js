@@ -30,7 +30,7 @@ exports.confirmPin = async (req, res) => {
     const {id_user, verification_pin} = req.body;
     try {
         const isAuth = await repo.verification(id_user, verification_pin)
-        if (isAuth) return res.status(200).send()
+        if (isAuth) return res.status(200).send({'response': 'Pin confirmation succeeded'})
         res.status(401).send()
     } catch (e) {
         console.log(e);
