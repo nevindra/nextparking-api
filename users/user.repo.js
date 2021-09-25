@@ -8,7 +8,7 @@ db.findUsers = async () => {
 
 db.findUserByEmail = async (email) => {
     const user = await client.query('SELECT * FROM users WHERE email = $1', [email])
-    return user.rows[0]
+    return user.rows
 }
 
 db.findUserByID = async (id_user) => {

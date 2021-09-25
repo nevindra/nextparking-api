@@ -50,8 +50,8 @@ exports.loginUser = async (req, res) => {
     console.log(email)
     try {
         const user = await repo.findUserByEmail(email)
-        if (!user) return res.status(404).send({'response': 'user not found'});
-        const isAuth = await bcrypt.compareSync(password, user.password);
+        if (!user[0]) return res.status(404).send({'response': 'user not found'});
+        const isAuth = await bcrypt.compareSync(password, user[0].password);
         if (isAuth) {
             await repo.updateDeviceToken(user.id_user, device_token)
             return res.status(200).send(user);
