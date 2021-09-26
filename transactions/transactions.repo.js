@@ -1,4 +1,4 @@
-const client = require('../database/database')
+const client = require('../database/db')
 const repoUser = require("../users/user.repo");
 const bcrypt = require("bcrypt");
 

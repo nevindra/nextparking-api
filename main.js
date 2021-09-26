@@ -4,7 +4,7 @@ const multer = require('multer');
 const helmet = require('helmet')
 const fs = require("fs");
 const path = require("path");
-require('./database/database')
+const db = require('./database/db')
 
 if (process.env.NODE_ENV === 'deployment') {
     if (!fs.existsSync('./images')) {
@@ -49,10 +49,15 @@ app.use('/api/', userRoutes);
 app.use('/api/', vehicleRoutes);
 app.use('/api/', transactionRoutes);
 
+db.connect().then(_ => {
+    console.log(`⚡ Connected to Database ⚡`)
+});
+
 const server = app.listen(process.env.PORT, err => {
-    if (err) return console.log(err);
+    if (err) console.log(err);
     console.log(`⚡ Connected to http://localhost:${PORT} ⚡`)
 });
 
+module.exports = server
 
 module.exports = server

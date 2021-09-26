@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "node main.js",
-    "test": "nodemon main.js",
-    "developer": "nodemon main.js"
+    "test": "mocha specs/*.js --exit",
+    "nodemon": "nodemon main.js"
   },
   "keywords": [],
   "author": "",

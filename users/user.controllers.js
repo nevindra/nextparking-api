@@ -47,7 +47,6 @@ exports.postRegistration = async (req, res) => {
 
 exports.loginUser = async (req, res) => {
     const {email, password, device_token} = req.body;
-    console.log(email)
     try {
         const user = await repo.findUserByEmail(email)
         if (!user[0]) return res.status(404).send({'response': 'user not found'});
