@@ -66,7 +66,7 @@ exports.deleteVehicleById = async (req, res) => {
             res.status(404).send();
         }
 
-        res.status(200).send();
+        res.status(200).send('response: success');
     } catch (e) {
         console.log(e);
         res.status(500).send();
