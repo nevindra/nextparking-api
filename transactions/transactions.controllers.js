@@ -14,7 +14,7 @@ exports.payTransaction = async (req, res) => {
             // pay the transaction
             await repo.payTransaction(id_user)
             // update user balance
-            const saldo = user.balance - userTransaction.rows[0].total;
+            const saldo = user[0].balance - userTransaction.rows[0].total;
             await repo.updateBalance(id_user, saldo)
             return res.status(200).send({'response': 'Payment succeeded'});
         } else {
@@ -42,7 +42,7 @@ exports.historyPaymentTransaction = async (req, res) => {
     const id_user = req.params.id
     const {status} = req.body
     try {
-        const user = repo.getHistoryParking(id_user, status)
+        const user = await repo.getHistoryParking(id_user, status)
         if (typeof user.rows[0] === 'undefined') {
             return res.status(404).send();
         } else {
@@ -71,7 +71,6 @@ exports.topUp = async (req, res) => {
     const {id_user, amount, payment_method, verification_pin} = req.body;
     /*TODO:
     *   1. Need to be fixed soon.*/
-    console.log(id_user)
     try {
         const isAuth = await repo.verification(id_user, verification_pin)
         if (isAuth) {

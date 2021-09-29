@@ -6,9 +6,9 @@ let db = {}
 
 db.verification = async (id_user, verification_pin) => {
     const user = await repoUser.findUserByID(id_user)
-    if (typeof user === 'undefined') return false
+    if (!user[0]) return false
     // do pin checking before continue
-    let verification_pin_user = user.verification_pin
+    let verification_pin_user = user[0].verification_pin
     const isAuth = await bcrypt.compareSync(verification_pin, verification_pin_user);
     return !!isAuth;
 }
