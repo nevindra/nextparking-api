@@ -59,5 +59,3 @@ const server = app.listen(process.env.PORT, err => {
 });
 
 module.exports = server
-
-module.exports = server

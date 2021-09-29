@@ -61,12 +61,12 @@ exports.deleteVehicleById = async (req, res) => {
     const {id_user, id_vehicle} = req.body
 
     try {
-        const result = repo.deleteVehicleById(id_user, id_vehicle)
+        const result = await repo.deleteVehicleById(id_user, id_vehicle)
         if (typeof result === 'undefined') {
-            res.status(404).send();
+            return res.status(404).send();
         }
 
-        res.status(200).send('response: success');
+        res.status(200).send({"response": 'success'});
     } catch (e) {
         console.log(e);
         res.status(500).send();
