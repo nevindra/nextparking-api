@@ -30,7 +30,7 @@ exports.postRegistration = async (req, res) => {
     const saltRounds = 12;
     try {
         const checkUser = await repo.findUserByEmail(email)
-        if (checkUser) return res.status(409)
+        if (typeof checkUser[0] === undefined) return res.status(409)
             .send({'response': 'user found. cant make double account for the same person'})
         const salt = bcrypt.genSaltSync(saltRounds);
         const encryptedPassword = bcrypt.hashSync(password, salt);
