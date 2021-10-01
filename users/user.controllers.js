@@ -16,7 +16,7 @@ exports.getUserByID = async (req, res) => {
     const id_user = req.params.id;
     try {
         const user = await repo.findUserByID(id_user)
-        if (!user[0]) return res.status(404).send({'response': 'user not found'});
+        if (!user) return res.status(404).send({'response': 'user not found'});
         res.status(200).send(user);
     } catch (e) {
         console.log(e)
@@ -67,7 +67,7 @@ exports.deleteUser = async (req, res) => {
     const id_user = req.params.id
     try {
         const user = await repo.findUserByID(id_user)
-        if (!user[0]) return res.status(404).send();
+        if (!user) return res.status(404).send();
         await repo.deleteUser(id_user)
 
         res.send({
