@@ -10,5 +10,8 @@ const client = new Pool({
     port: process.env.DATABASE_PORT
 })
 
+client.connect().then(_ => {
+    console.log(`⚡ Connected to Database ⚡`)
+});
 
 module.exports = client

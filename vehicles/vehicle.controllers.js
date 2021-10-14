@@ -1,9 +1,6 @@
 const repo = require('./vehicle.repo')
 
 exports.registerVehicle = async (req, res) => {
-    /* TODO:
-    *   1. Add vehicle image to Google Cloud Storage
-    * */
     const {id_user, plate_number, car_type} = req.body
     // const image = req.file;
     // const imageUrl = image.path;
@@ -27,10 +24,12 @@ exports.registerVehicle = async (req, res) => {
 exports.getAllVehicles = async (req, res) => {
     try {
         const vehicles = await repo.getAllVehicles()
+        console.log(vehicles)
+        if (vehicles.rows === undefined) return res.status(404).send()
         res.status(200).send(vehicles.rows)
     } catch (e) {
         console.log(e)
-        res.status(400).send(e);
+        res.status(500).send(e);
     }
 }
 
@@ -38,7 +37,9 @@ exports.getUserVehicles = async (req, res) => {
     const {id_user} = req.params
     try {
         const results = await repo.getUserVehicles(id_user)
-        res.send(results);
+        console.log(results)
+        if (results.rows === undefined) return res.status(404).send()
+        res.status(200).send(results);
     } catch (e) {
         console.log(e);
         res.status(500).send();
@@ -65,8 +66,8 @@ exports.deleteVehicleById = async (req, res) => {
         const result = await repo.getSingleVehicle(id_user, id_vehicle)
         if (typeof result === 'undefined') {
             return res.status(404).send({
-                "id_user":id_user,
-                "id_vehicle":id_vehicle
+                "id_user": id_user,
+                "id_vehicle": id_vehicle
             });
         }
         await repo.deleteVehicleById(id_user, id_vehicle)

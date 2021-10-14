@@ -1,21 +1,18 @@
-const repoUser = require('../users/user.repo')
 const repo = require('./transactions.repo')
 
 exports.payTransaction = async (req, res) => {
     // this api will be used to pay parking transactions
     const {id_user, verification_pin} = req.body;
+    /*
+    * TODO:
+    *  1. Need to be rechecked
+    * */
     try {
         const isAuth = await repo.verification(id_user, verification_pin)
         if (isAuth) {
-            const user = await repoUser.findUserByID(id_user)
-            // get all transaction price to be calculated with current balance
-            const userTransaction = await repo.getAllTransactionPrice(id_user)
-            if (typeof userTransaction.rows[0] === 'undefined') return res.status(404).send({'response': 'There are no active transaction for you.'})
-            // pay the transaction
-            await repo.payTransaction(id_user)
-            // update user balance
-            const saldo = user.balance - userTransaction.rows[0].total;
-            await repo.updateBalance(id_user, saldo)
+            const id_quota = await repo.getQuotas(id_user)
+            let amount = id_quota.amount - 1
+            await repo.payTransaction(id_user, amount)
             return res.status(200).send({'response': 'Payment succeeded'});
         } else {
             res.status(404).send({'response': 'user not found'});
@@ -38,50 +35,15 @@ exports.confirmPin = async (req, res) => {
     }
 };
 
-exports.historyPaymentTransaction = async (req, res) => {
-    const id_user = req.params.id
-    const {status} = req.body
+exports.getSubsPaymentHistory = async (req, res) => {
+    const {id_user} = req.params
+    console.log(id_user);
     try {
-        const user = await repo.getHistoryParking(id_user, status)
-        if (typeof user.rows[0] === 'undefined') {
-            return res.status(200).send([{}]);
-        } else {
-            res.status(200).send(user.rows);
-        }
-
-    } catch (e) {
-        console.log(e);
-        res.status(500).send();
-    }
-}
-
-exports.historyTopUpPayment = async (req, res) => {
-    const id_user = req.params.id;
-
-    try {
-        const historyTopUp = await repo.getAllTopUpTransaction(id_user)
-        res.status(200).send(historyTopUp.rows)
+        const user = await repo.getSubsPaymentHistory(id_user)
+        if (user.rows === undefined) return res.status(404).send([])
+        res.status(200).send(user.rows)
     } catch (e) {
         console.log(e)
         res.status(500).send()
     }
 }
-
-exports.topUp = async (req, res) => {
-    const {id_user, amount, payment_method, verification_pin} = req.body;
-    /*TODO:
-    *   1. Need to be fixed soon.*/
-    try {
-        const isAuth = await repo.verification(id_user, verification_pin)
-        if (isAuth) {
-            // user enter amount -> saved to database -> get sum of all recharge amount -> insert into users
-            await repo.updateBalance(id_user, amount, payment_method)
-
-            return res.status(200).send({'response': 'Topup succeeded'});
-        }
-    } catch (e) {
-        console.log(e);
-        res.status(500).send();
-    }
-};
-
