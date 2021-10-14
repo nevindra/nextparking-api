@@ -61,7 +61,7 @@ exports.bookParking = async (req, res) => {
 }
 
 exports.getAllUniversity = async (req, res) => {
-    let api_key = "AIzaSyCid7RuvwmBOOP0zqFTzz2jB4szhrarJbU"
+    let api_key = process.env.GOOGLE_API_KEY
     let destinations = ["Kampus D Gunadarma"]
     let origins = ["-6.538755,106.8101117"]
     const client = new Client({})
