@@ -1,4 +1,5 @@
 require('dotenv').config()
+const logger = require('../config/logger')
 
 const {Pool} = require('pg')
 
@@ -11,7 +12,7 @@ const client = new Pool({
 })
 
 client.connect().then(_ => {
-    console.log(`⚡ Connected to Database ⚡`)
-});
+    logger.info(`⚡ Connected to Database ⚡`)
+}).catch(e => logger.error(e));
 
 module.exports = client

@@ -1,5 +1,5 @@
 const repo = require('./vehicle.repo')
-
+const logger = require('../config/logger')
 exports.registerVehicle = async (req, res) => {
     const {id_user, plate_number, car_type} = req.body
     // const image = req.file;
@@ -16,7 +16,7 @@ exports.registerVehicle = async (req, res) => {
             }
         })
     } catch (e) {
-        console.log(e)
+        logger.error(e);
         res.status(400).send(e);
     }
 };
@@ -28,7 +28,7 @@ exports.getAllVehicles = async (req, res) => {
         if (vehicles.rows === undefined) return res.status(404).send()
         res.status(200).send(vehicles.rows)
     } catch (e) {
-        console.log(e)
+        logger.error(e);
         res.status(500).send(e);
     }
 }
@@ -41,7 +41,7 @@ exports.getUserVehicles = async (req, res) => {
         if (results.rows === undefined) return res.status(404).send()
         res.status(200).send(results);
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         res.status(500).send();
     }
 };
@@ -53,7 +53,7 @@ exports.getSingleVehicle = async (req, res) => {
         if (typeof results === 'undefined') return res.status(400).send({'response': 'Vehicle not found.'})
         res.status(200).send(results);
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         res.status(500).send();
     }
 };
@@ -74,7 +74,7 @@ exports.deleteVehicleById = async (req, res) => {
 
         res.status(200).send({"response": 'success'});
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         res.status(500).send();
     }
 };

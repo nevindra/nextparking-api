@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
 const multer = require('multer');
-const helmet = require('helmet')
 const fs = require("fs");
 const path = require("path");
-const db = require('./database/db')
+const logger = require('./config/logger')
+require('dotenv').config()
 
 if (process.env.NODE_ENV === 'deployment') {
     if (!fs.existsSync('./images')) {
@@ -18,11 +18,6 @@ if (process.env.NODE_ENV === 'deployment') {
     }
 }
 
-const swaggerUi = require('swagger-ui-express');
-const swaggerDocument = require('./swagger.json');
-
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
 const {fileStorage, fileFilter} = require('./utility/multer')
 const PORT = process.env.PORT;
 
@@ -35,7 +30,6 @@ app.use((req, res, next) => {
 });
 
 app.use(express.json());
-// app.use(helmet());
 app.use(express.urlencoded({extended: false, limit: '50mb'}))
 app.use(multer({
     storage: fileStorage, fileFilter: fileFilter
@@ -53,8 +47,8 @@ app.use('/api/', transactionRoutes);
 app.use('/api/', universityRoutes);
 
 const server = app.listen(process.env.PORT, err => {
-    if (err) console.log(err);
-    console.log(`⚡ Connected to http://localhost:${PORT} ⚡`)
+    if (err) logger.error(err);
+    logger.info(`⚡ Connected to http://localhost:${PORT} ⚡`)
 });
 
 module.exports = server

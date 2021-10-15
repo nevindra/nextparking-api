@@ -1,4 +1,4 @@
-const client = require('../database/db')
+const client = require('../config/db')
 
 let db = {}
 

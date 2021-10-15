@@ -1,6 +1,6 @@
 const repo = require('./uni.repo')
 const {Client} = require("@googlemaps/google-maps-services-js");
-const axios = require("axios");
+const logger = require('../config/logger');
 
 exports.getAllParkingTransactions = async (req, res) => {
     /*
@@ -19,7 +19,7 @@ exports.getAllParkingTransactions = async (req, res) => {
         }
 
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         res.status(500).send();
     }
 }
@@ -31,14 +31,9 @@ exports.getSingleParkingTransactions = async (req, res) => {
     const {id_transaction} = req.params
     try {
         const transaction = await repo.getSingleParkingTransactions(id_transaction)
-        if (typeof transaction === 'undefined') {
-            return res.status(200).send([{}]);
-        } else {
-            res.status(200).send(transaction);
-        }
-
+        res.status(200).send(transaction);
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         res.status(500).send();
     }
 }
@@ -58,10 +53,57 @@ exports.payParking = async (req, res) => {
 
 exports.bookParking = async (req, res) => {
     const {id_user, id_place, id_vehicle, time_booking} = req.body
+
+    try {
+        await repo.bookParking(id_user, id_place, id_vehicle, time_booking)
+        res.status(201).send({
+            'response': 'Booking Order Created'
+        })
+    } catch (e) {
+        logger.error(e);
+        res.status(500).send()
+    }
+}
+
+exports.getAllBooking = async (req, res) => {
+    const id_user = req.params.id_user
+    try {
+        const bookings = await repo.getAllBooking(id_user)
+        if (bookings.rows === undefined) return res.status(404).send([])
+        res.status(200).send(bookings.rows)
+    } catch (e) {
+        logger.error(e);
+        res.status(500).send()
+    }
+}
+
+exports.getSingleBooking = async (req, res) => {
+    const {id_booking} = req.params
+    try {
+        const book = await repo.getSingleBooking(id_booking)
+        res.status(200).send(book)
+    } catch (e) {
+        logger.error(e);
+        res.status(500).send()
+    }
+}
+
+exports.deleteBooking = async (req, res) => {
+    const {id_booking} = req.params
+
+    try {
+        await repo.deleteBooking(id_booking)
+        res.status(204).send({'response': 'Booking Deleted'})
+    } catch (e) {
+        logger.error(e)
+        res.status(500).send();
+    }
 }
 
 exports.getAllUniversity = async (req, res) => {
-    let api_key = process.env.GOOGLE_API_KEY
+    /*
+    * NOT DONE YET
+    * */
     let destinations = ["Kampus D Gunadarma"]
     let origins = ["-6.538755,106.8101117"]
     const client = new Client({})
@@ -71,14 +113,13 @@ exports.getAllUniversity = async (req, res) => {
             params: {
                 origins: origins,
                 destinations: destinations,
-                key: api_key
+                key: process.env.GOOGLE_API_KEY
             }
         })
-        // console.log(JSON.stringify(result.data))
         console.log(JSON.stringify(result.data.rows[0].elements))
         res.status(200).send()
     } catch (e) {
-        console.log(e)
+        logger.error(e);
         res.status(500).send()
     }
 }
@@ -90,7 +131,7 @@ exports.getSingleUniversity = async (req, res) => {
         const result = repo.getSingleUniversity(id_place)
         res.status(200).send(result)
     } catch (e) {
-        console.log(e)
+        logger.error(e);
         res.status(500).send()
     }
 }

@@ -1,13 +1,14 @@
 const bcrypt = require("bcrypt");
 const repo = require('./user.repo')
 const nodemailer = require("nodemailer");
+const logger = require('../config/logger')
 
 exports.getUsers = async (req, res) => {
     try {
         const results = await repo.findUsers()
         res.status(200).send(results.rows);
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         res.status(500).send();
     }
 };
@@ -19,7 +20,7 @@ exports.getUserByID = async (req, res) => {
         if (!user) return res.status(404).send({'response': 'user not found'});
         res.status(200).send(user);
     } catch (e) {
-        console.log(e)
+        logger.error(e);
         res.status(500).send();
     }
 };
@@ -40,7 +41,7 @@ exports.postRegistration = async (req, res) => {
         res.status(201).send({'response': 'succeeded'});
     } catch
         (e) {
-        console.log(e);
+        logger.error(e);
         res.status(500).send(e);
     }
 };
@@ -58,7 +59,7 @@ exports.loginUser = async (req, res) => {
             return res.status(401).send({'response': 'wrong password'});
         }
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         return res.status(500).send();
     }
 };
@@ -74,7 +75,7 @@ exports.deleteUser = async (req, res) => {
             'response': `User deleted with ID: ${id_user}`
         })
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         res.status(400).send();
     }
 };
@@ -94,7 +95,7 @@ exports.editUser = async (req, res) => {
 
         res.send(`Updated user with ID: ${id_user}`)
     } catch (e) {
-        console.log(e);
+        logger.error(e);
         res.status(400).send();
     }
 };
