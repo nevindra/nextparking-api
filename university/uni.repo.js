@@ -30,7 +30,7 @@ db.bookParking = async (id_user, id_place, id_vehicle, time_booking) => {
 }
 
 db.getAllBooking = async (id_user) => {
-    return await client.query('SELECT * FROM bookings WHERE id_user = $1 AND is_done = false', id_user)
+    return await client.query('SELECT * FROM bookings WHERE id_user = $1 AND is_done = false', [id_user])
 }
 
 db.deleteBooking = async (id_booking) => {
