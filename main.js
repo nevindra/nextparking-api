@@ -6,6 +6,8 @@ const path = require("path");
 const logger = require('./config/logger')
 require('dotenv').config()
 
+const {fileStorage, fileFilter} = require('./utility/multer')
+
 if (process.env.NODE_ENV === 'deployment') {
     if (!fs.existsSync('./images')) {
         fs.mkdir(
@@ -16,9 +18,8 @@ if (process.env.NODE_ENV === 'deployment') {
                 console.log('Directory created successfully!');
             })
     }
-}
 
-const {fileStorage, fileFilter} = require('./utility/multer')
+}
 const PORT = process.env.PORT;
 
 app.use((req, res, next) => {

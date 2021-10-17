@@ -3,7 +3,7 @@ const client = require('../config/db')
 let db = {}
 
 db.findUsers = async () => {
-    return await client.query('SELECT * FROM users ORDER BY id_user')
+    return await client.query('SELECT * FROM users ORDERS BY id_user')
 }
 
 db.findUserByEmail = async (email) => {
@@ -18,7 +18,7 @@ db.findUserByID = async (id_user) => {
 
 db.registerUser = async (full_name, email, encryptedPassword, phone_number, encryptedVerification) => {
     await client.query(
-        'INSERT INTO users(full_name,email,password,phone_number,verification_pin, balance) VALUES($1,$2,$3,$4,$5,0)',
+        'INSERT INTO users(full_name,email,password,phone_number,verification_pin) VALUES($1,$2,$3,$4,$5)',
         [full_name, email, encryptedPassword, phone_number, encryptedVerification]
     );
 }

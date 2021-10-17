@@ -41,6 +41,7 @@ exports.postRegistration = async (req, res) => {
         res.status(201).send({'response': 'succeeded'});
     } catch
         (e) {
+        console.log(e)
         logger.error(e);
         res.status(500).send(e);
     }
