@@ -1,0 +1,92 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model company {
+  id           Int            @id(map: "company_pk")
+  name         String?        @db.VarChar(100)
+  universities universities[]
+}
+
+model uni_quotas {
+  id_quota Int    @id(map: "uni_quotas_pk") @default(autoincrement())
+  id_user  Int?   @unique(map: "uni_quotas_id_user_uindex")
+  amount   Int?
+  users    users? @relation(fields: [id_user], references: [id_user], onDelete: Cascade, map: "uni_quotas_users_id_user_fk")
+}
+
+model users {
+  id_user           Int                 @id @default(autoincrement())
+  full_name         String              @db.VarChar(64)
+  phone_number      String              @db.VarChar(12)
+  email             String              @unique(map: "unique_email") @db.VarChar(64)
+  password          String              @db.VarChar(64)
+  device_token      String?             @db.VarChar(180)
+  uni_bookings      uni_bookings[]
+  uni_parkings      uni_parkings[]
+  uni_quotas        uni_quotas?
+  uni_subscriptions uni_subscriptions[]
+  vehicles          vehicles[]
+}
+
+model vehicles {
+  id_vehicle   Int            @id(map: "user_vehicles_pk") @default(autoincrement())
+  id_user      Int
+  plat_number  String         @db.VarChar(10)
+  vehicle_type String         @db.VarChar(8)
+  last_parking String?        @db.VarChar(32)
+  users        users          @relation(fields: [id_user], references: [id_user], onDelete: Cascade, map: "user_vehicles_users_id_user_fk")
+  uni_bookings uni_bookings[]
+  uni_parkings uni_parkings[]
+}
+
+model uni_subscriptions {
+  id_payment   Int       @id(map: "user_subscriptions_pk") @default(autoincrement())
+  id_user      Int?
+  method       String?   @db.VarChar(8)
+  time_payment DateTime? @db.Timestamp(6)
+  subs_type    String?   @db.VarChar(8)
+  users        users?    @relation(fields: [id_user], references: [id_user], onDelete: Cascade, map: "user_uni_parking_users_id_user_fk")
+}
+
+model uni_bookings {
+  id_booking   Int          @id(map: "bookings_pk") @default(autoincrement())
+  id_user      Int
+  id_vehicle   Int
+  id_place     Int
+  time_booking DateTime?    @default(now()) @db.Timestamptz(6)
+  status       String?      @default("BOOKED") @db.VarChar(10)
+  universities universities @relation(fields: [id_place], references: [id_place], onDelete: SetNull, map: "bookings_places_id_place_fk")
+  users        users        @relation(fields: [id_user], references: [id_user], onDelete: Cascade, map: "bookings_users_id_user_fk")
+  vehicles     vehicles     @relation(fields: [id_vehicle], references: [id_vehicle], onDelete: SetNull, map: "bookings_user_vehicles_id_vehicle_fk")
+}
+
+model uni_parkings {
+  id_parking Int       @id(map: "uni_parking_transactions_pk") @default(autoincrement())
+  id_user    Int?
+  id_vehicle Int?
+  id_place   Int?
+  time_in    DateTime? @db.Timestamp(6)
+  time_out   DateTime? @db.Timestamp(6)
+  is_done    Boolean?
+  users      users?    @relation(fields: [id_user], references: [id_user], onDelete: Cascade, map: "uni_parking_transactions_users_id_user_fk")
+  vehicles   vehicles? @relation(fields: [id_vehicle], references: [id_vehicle], onDelete: Cascade, map: "uni_parking_transactions_user_vehicles_id_vehicle_fk")
+}
+
+model universities {
+  id_place       Int            @id(map: "places_pk") @default(autoincrement())
+  id_company     Int?
+  name           String?        @db.VarChar(32)
+  address        String?        @db.VarChar(64)
+  longitude      String?        @db.VarChar(16)
+  latitude       String?        @db.VarChar(16)
+  motor_capacity Int?
+  car_capacity   Int?
+  company        company?       @relation(fields: [id_company], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "places_id_company_fkey")
+  uni_bookings   uni_bookings[]
+}
