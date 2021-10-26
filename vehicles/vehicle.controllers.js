@@ -1,12 +1,17 @@
-const repo = require('./vehicle.repo')
 const logger = require('../config/logger')
+
+const {PrismaClient} = require('@prisma/client');
+const prisma = new PrismaClient();
+
 exports.registerVehicle = async (req, res) => {
     const {id_user, plate_number, car_type} = req.body
-    // const image = req.file;
-    // const imageUrl = image.path;
 
     try {
-        await repo.registerVehicle(id_user, plate_number, car_type)
+        await prisma.vehicles.create({
+            id_user,
+            plate_number,
+            car_type
+        })
         res.status(201).send({
             'response': 'succeeded',
             'data': {
@@ -23,11 +28,11 @@ exports.registerVehicle = async (req, res) => {
 
 exports.getAllVehicles = async (req, res) => {
     try {
-        const vehicles = await repo.getAllVehicles()
-        console.log(vehicles)
-        if (vehicles.rows === undefined) return res.status(404).send()
-        res.status(200).send(vehicles.rows)
+        const vehicles = await prisma.vehicles.findMany()
+        if (!vehicles) return res.status(404).send()
+        res.status(200).send(vehicles)
     } catch (e) {
+        console.log(e)
         logger.error(e);
         res.status(500).send(e);
     }
@@ -36,9 +41,11 @@ exports.getAllVehicles = async (req, res) => {
 exports.getUserVehicles = async (req, res) => {
     const {id_user} = req.params
     try {
-        const results = await repo.getUserVehicles(id_user)
-        console.log(results)
-        if (results.rows === undefined) return res.status(404).send()
+        const results = await prisma.vehicles.findMany({
+            where:
+                {id_user: parseInt(id_user)}
+        })
+        if (results === undefined) return res.status(404).send()
         res.status(200).send(results);
     } catch (e) {
         logger.error(e);
@@ -47,34 +54,35 @@ exports.getUserVehicles = async (req, res) => {
 };
 
 exports.getSingleVehicle = async (req, res) => {
-    const {id_user, id_vehicle} = req.params
+    const {id_vehicle} = req.params
     try {
-        const results = await repo.getSingleVehicle(id_user, id_vehicle)
-        if (typeof results === 'undefined') return res.status(400).send({'response': 'Vehicle not found.'})
+        const results = await prisma.vehicles.findUnique({
+            where: {
+                id_vehicle: parseInt(id_vehicle)
+            }
+        })
+        if (!results) return res.status(404).send({'response': 'Vehicle not found.'})
         res.status(200).send(results);
     } catch (e) {
+        console.log(e)
         logger.error(e);
         res.status(500).send();
     }
 };
 
 exports.deleteVehicleById = async (req, res) => {
-    const {id_user, id_vehicle} = req.body
-    console.log(id_user);
-    console.log(id_vehicle);
-    try {
-        const result = await repo.getSingleVehicle(id_user, id_vehicle)
-        if (typeof result === 'undefined') {
-            return res.status(404).send({
-                "id_user": id_user,
-                "id_vehicle": id_vehicle
-            });
-        }
-        await repo.deleteVehicleById(id_user, id_vehicle)
+    const {id_vehicle} = req.body
 
-        res.status(200).send({"response": 'success'});
+    try {
+        await prisma.vehicles.delete({
+            where: {
+                id_vehicle: parseInt(id_vehicle)
+            }
+        })
+
+        res.status(204).send({"response": 'success'});
     } catch (e) {
-        logger.error(e);
+        if (e.code === "P2025") return res.status(404).send({response: 'vehicle not found'})
         res.status(500).send();
     }
 };

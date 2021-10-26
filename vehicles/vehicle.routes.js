@@ -4,12 +4,12 @@ const router = express.Router();
 const vehicleControllers = require('./vehicle.controllers');
 
 // Collections:
-router.get('/vehicles', vehicleControllers.getAllVehicles)
-router.get('/vehicles/:id_user', vehicleControllers.getUserVehicles);
-router.get('/vehicles/:id_user/:id_vehicle', vehicleControllers.getSingleVehicle)
+router.get('/', vehicleControllers.getAllVehicles)
+router.get('/:id_user', vehicleControllers.getUserVehicles);
+router.get('/:id_user/:id_vehicle', vehicleControllers.getSingleVehicle)
 
 // Non Resource URL:
-router.post('/register-vehicles', vehicleControllers.registerVehicle);
+router.post('/register', vehicleControllers.registerVehicle);
 
 router.delete('/vehicles', vehicleControllers.deleteVehicleById)
 

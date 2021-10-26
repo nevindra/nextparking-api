@@ -38,14 +38,17 @@ app.use(multer({
 
 const userRoutes = require('./users/user.routes');
 const vehicleRoutes = require('./vehicles/vehicle.routes');
-const transactionRoutes = require('./transactions/transaction.routes');
 const universityRoutes = require('./university/uni.routes')
+const client = require("./config/db");
 
 
-app.use('/api/', userRoutes);
-app.use('/api/', vehicleRoutes);
-app.use('/api/', transactionRoutes);
-app.use('/api/', universityRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/vehicles', vehicleRoutes);
+app.use('/api/uni', universityRoutes);
+
+client.connect().then(_ => {
+    logger.info(`⚡ Connected to Database ⚡`)
+}).catch(e => logger.error(e));
 
 const server = app.listen(process.env.PORT, err => {
     if (err) logger.error(err);
