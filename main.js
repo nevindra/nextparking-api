@@ -8,7 +8,7 @@ const client = require("./config/db");
 
 require('dotenv').config()
 
-const {fileStorage, fileFilter} = require('./utility/multer')
+const {fileStorage, fileFilter} = require('./util/multer')
 
 if (process.env.NODE_ENV === 'deployment') {
     if (!fs.existsSync('./images')) {
@@ -38,12 +38,12 @@ app.use(multer({
     storage: fileStorage, fileFilter: fileFilter
 }).single('image'))
 
-const userRoutes = require('./users/user.routes');
-const vehicleRoutes = require('./vehicles/vehicle.routes');
-const universityRoutes = require('./university/uni.routes');
-const parkingRoutes = require('./parkings/parkings.routes');
-const bookingRoutes = require('./bookings/bookings.routes');
-const subRoutes = require('./subscriptions/subs.routes')
+const userRoutes = require('./src/users/user.routes');
+const vehicleRoutes = require('./src/vehicles/vehicle.routes');
+const universityRoutes = require('./src/university/uni.routes');
+const parkingRoutes = require('./src/parkings/parkings.routes');
+const bookingRoutes = require('./src/bookings/bookings.routes');
+const subRoutes = require('./src/subscriptions/subs.routes')
 
 app.use('/api/users', userRoutes);
 app.use('/api/vehicles', vehicleRoutes);

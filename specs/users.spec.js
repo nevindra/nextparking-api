@@ -1,4 +1,4 @@
-const UserCtrls = require('../users/user.controllers')
+const UserCtrls = require('../src/users/user.controllers')
 const chai = require('chai');
 const server = require('../main')
 const chaiHttp = require("chai-http");
