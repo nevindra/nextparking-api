@@ -4,6 +4,8 @@ const multer = require('multer');
 const fs = require("fs");
 const path = require("path");
 const logger = require('./config/logger')
+const client = require("./config/db");
+
 require('dotenv').config()
 
 const {fileStorage, fileFilter} = require('./utility/multer')
@@ -38,13 +40,17 @@ app.use(multer({
 
 const userRoutes = require('./users/user.routes');
 const vehicleRoutes = require('./vehicles/vehicle.routes');
-const universityRoutes = require('./university/uni.routes')
-const client = require("./config/db");
-
+const universityRoutes = require('./university/uni.routes');
+const parkingRoutes = require('./parkings/parkings.routes');
+const bookingRoutes = require('./bookings/bookings.routes');
+const subRoutes = require('./subscriptions/subs.routes')
 
 app.use('/api/users', userRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/uni', universityRoutes);
+app.use('/api/parkings', parkingRoutes);
+app.use('/api/bookings', bookingRoutes)
+app.use('/api/subs', subRoutes)
 
 client.connect().then(_ => {
     logger.info(`⚡ Connected to Database ⚡`)
