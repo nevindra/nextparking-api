@@ -10,6 +10,10 @@ const client = require('twilio')(accountSid, authToken, {
     lazyLoading: true
 });
 
+function convertTZ(date, tzString) {
+    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));
+}
+
 exports.getUsers = async (req, res) => {
     try {
         const results = await prisma.users.findMany()
@@ -25,14 +29,13 @@ exports.getUserByID = async (req, res) => {
     try {
         const user = await prisma.users.findUnique({
             where: {
-                id_user: parseInt(id_user)
+                id_user: parseInt(id_user),
             }
         })
         if (!user) return res.status(404).send({'response': 'user not found'});
         res.status(200).send(user);
     } catch (e) {
         console.log(e)
-        logger.error(e);
         res.status(500).send();
     }
 };
@@ -55,7 +58,7 @@ exports.postRegistration = async (req, res) => {
 
         res.status(201).send({'response': 'succeeded'});
     } catch (e) {
-        if (e.code === "P2002") return res.status(409).send({response: 'email is found'})
+        if (e.code === "P2002") return res.status(409).send({response: 'email / phone number is found'})
         logger.error(e);
         res.status(500).send(e);
     }
@@ -69,10 +72,14 @@ exports.loginUser = async (req, res) => {
                 email
             }
         })
+
         if (!user) return res.status(404).send({'response': 'user not found'});
+        if (!user.activated) return res.status(409).send({response: 'activate the account'})
         const isAuth = await bcrypt.compareSync(password, user.password);
         if (isAuth) {
-            await prisma.users.update({where: {email}, data: {device_token}})
+            const date = new Date()
+            const currentDate = convertTZ(date, "Asia/Jakarta")
+            await prisma.users.update({where: {email}, data: {device_token, last_login: currentDate}})
             res.status(200).send(user);
         } else {
             return res.status(401).send({'response': 'wrong password'});
@@ -121,10 +128,10 @@ exports.sendSMS = async (req, res) => {
     const {phone_number} = req.body
     const phone = '+62' + phone_number.substring(1);
     try {
-        client.verify.services(process.env.TWILIO_SERVICE_ID)
+        await client.verify.services(process.env.TWILIO_SERVICE_ID)
             .verifications
             .create({to: phone, channel: 'sms'})
-            .then(verification => console.log(verification.status));
+
         res.status(200).send({response: 'success'})
     } catch (e) {
         logger.error(e)
@@ -141,11 +148,13 @@ exports.verifySMS = async (req, res) => {
             .verificationChecks
             .create({to: phone, code: token})
         if (result.status === 'approved') {
+            await prisma.users.update({where: {phone_number}, data: {activated: true}})
             res.status(200).send({response: 'success'})
         } else if (result.status === 'pending') {
             res.status(409).send({response: 'wrong pin'})
         }
     } catch (e) {
+        console.log(e)
         logger.error(e);
         res.status(500).send({response: 'internal server error'});
     }

@@ -18,9 +18,11 @@ model company {
 model users {
   id_user               Int                     @id @default(autoincrement())
   full_name             String                  @db.VarChar(64)
-  phone_number          String                  @db.VarChar(12)
+  phone_number          String                  @unique(map: "users_phone_number_uindex") @db.VarChar(12)
   email                 String                  @unique(map: "unique_email") @db.VarChar(64)
   password              String                  @db.VarChar(64)
+  activated             Boolean?                @default(false)
+  last_login            DateTime?               @db.Timestamptz(6)
   device_token          String?                 @db.VarChar(180)
   bookings              bookings[]
   parkings_transactions parkings_transactions[]
@@ -94,6 +96,9 @@ model subs_plan {
   code              String?             @unique(map: "uni_subs_plan_code_uindex") @db.VarChar(6)
   price             Int?
   quota             Int?
+  vehicle_type      String?             @db.VarChar(8)
+  descriptions      String?             @db.VarChar(64)
+  subs_type         String?             @db.VarChar(8)
   company           company?            @relation(fields: [id_company], references: [id], map: "uni_subs_plan_company_id_fk")
   subs_transactions subs_transactions[]
 }
