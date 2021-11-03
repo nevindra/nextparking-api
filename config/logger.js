@@ -1,4 +1,4 @@
-const {format, transports, createLogger, level} = require('winston');
+const {format, transports, createLogger} = require('winston');
 require('dotenv').config()
 
 const timezoned = () => {
@@ -6,12 +6,20 @@ const timezoned = () => {
         timeZone: 'Asia/Jakarta'
     });
 }
+
 const logger = createLogger({
     transports: [
         new transports.Console({
             level: 'info',
-            format: format.simple()
-        })
+            format: format.combine(
+                format.timestamp({
+                    format: 'YYYY-MM-DD HH:mm:ss'
+                }),
+                format.errors({stack: true}),
+                format.splat(),
+                format.json()
+            )
+        }),
     ]
 });
 

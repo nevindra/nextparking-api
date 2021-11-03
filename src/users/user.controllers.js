@@ -17,26 +17,42 @@ function convertTZ(date, tzString) {
 exports.getUsers = async (req, res) => {
     try {
         const results = await prisma.users.findMany()
-        res.status(200).send(results);
+        return res.status(200).json({
+            status: 200,
+            data: results
+        });
     } catch (e) {
         logger.error(e);
-        res.status(500).send();
+        return res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        });
     }
 };
 
 exports.getUserByID = async (req, res) => {
     const id_user = req.params.id;
     try {
-        const user = await prisma.users.findUnique({
+        const user = await prisma.user.findUnique({
             where: {
                 id_user: parseInt(id_user),
             }
         })
-        if (!user) return res.status(404).send({'response': 'user not found'});
-        res.status(200).send(user);
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        return res.status(200).json({
+            status: 200,
+            data: user
+        });
     } catch (e) {
         console.log(e)
-        res.status(500).send();
+        return res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        });
     }
 };
 
@@ -56,11 +72,20 @@ exports.postRegistration = async (req, res) => {
             }
         })
 
-        res.status(201).send({'response': 'succeeded'});
+        return res.status(201).json({
+            status: 201,
+            data: user
+        });
     } catch (e) {
-        if (e.code === "P2002") return res.status(409).send({response: 'email / phone number is found'})
+        if (e.code === "P2002") return res.status(409).send({
+            status: 409,
+            message: 'email / phone number is found'
+        })
         logger.error(e);
-        res.status(500).send(e);
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        });
     }
 };
 
@@ -72,21 +97,36 @@ exports.loginUser = async (req, res) => {
                 email
             }
         })
-
-        if (!user) return res.status(404).send({'response': 'user not found'});
-        if (!user.activated) return res.status(409).send({response: 'activate the account'})
-        const isAuth = await bcrypt.compareSync(password, user.password);
-        if (isAuth) {
-            const date = new Date()
-            const currentDate = convertTZ(date, "Asia/Jakarta")
-            await prisma.users.update({where: {email}, data: {device_token, last_login: currentDate}})
-            res.status(200).send(user);
-        } else {
-            return res.status(401).send({'response': 'wrong password'});
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
         }
+        if (!user.activated) {
+            return res.status(403).json({
+                message: "User is not activated"
+            });
+        }
+        if (!bcrypt.compareSync(password, user.password)) {
+            return res.status(401).json({
+                message: "Wrong password"
+            });
+        }
+        const date = new Date()
+        const currentDate = convertTZ(date, "Asia/Jakarta")
+        await prisma.users.update({where: {email}, data: {device_token, last_login: currentDate}})
+        return res.status(200).json({
+            status: 200,
+            data: {
+                user
+            }
+        });
     } catch (e) {
         logger.error(e);
-        return res.status(500).send();
+        return res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        });
     }
 };
 
@@ -99,8 +139,11 @@ exports.deleteUser = async (req, res) => {
         })
     } catch (e) {
         logger.error(e);
-        if (e.code === "P2025") return res.status(404).send({response: 'User not found'})
-        res.status(500).send();
+        if (e.code === "P2025") return res.status(404).send({status: 404, message: 'User not found'})
+        return res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        });
     }
 };
 
@@ -132,10 +175,13 @@ exports.sendSMS = async (req, res) => {
             .verifications
             .create({to: phone, channel: 'sms'})
 
-        res.status(200).send({response: 'success'})
+        res.status(200).send({status: 200, message: 'success'})
     } catch (e) {
         logger.error(e)
-        res.send(500).send({response: 'internal server error'})
+        return res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        });
     }
 
 }
@@ -149,13 +195,16 @@ exports.verifySMS = async (req, res) => {
             .create({to: phone, code: token})
         if (result.status === 'approved') {
             await prisma.users.update({where: {phone_number}, data: {activated: true}})
-            res.status(200).send({response: 'success'})
+            res.status(200).send({status: 200, message: 'User is verified'})
         } else if (result.status === 'pending') {
-            res.status(409).send({response: 'wrong pin'})
+            res.status(409).send({status: 409, message: 'Code is not valid'})
         }
     } catch (e) {
         console.log(e)
         logger.error(e);
-        res.status(500).send({response: 'internal server error'});
+        return res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        })
     }
 }
