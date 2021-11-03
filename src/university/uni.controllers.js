@@ -14,10 +14,16 @@ exports.searchUniversity = async (req, res) => {
                 }
             }
         })
-        res.status(200).send(result)
+        res.status(200).json({
+            status: 200,
+            data: result
+        })
     } catch (e) {
         console.log(e);
-        res.status(500).send()
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        })
     }
 }
 
@@ -42,10 +48,16 @@ exports.getAllUniversity = async (req, res) => {
         })
         let locations = results.data.rows[0].elements
         let sorted = locations.sort((a, b) => a.distance.value - b.distance.value);
-        res.status(200).send(sorted)
+        res.status(200).json({
+            status: 200,
+            data: sorted
+        })
     } catch (e) {
         logger.error(e);
-        res.status(500).send()
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        })
     }
 }
 
@@ -54,9 +66,15 @@ exports.getSingleUniversity = async (req, res) => {
 
     try {
         const result = await prisma.universities.findUnique({where: {id_place: parseInt(id_place)}})
-        res.status(200).send(result)
+        res.status(200).json({
+            status: 200,
+            data: result
+        })
     } catch (e) {
         logger.error(e);
-        res.status(500).send()
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        })
     }
 }

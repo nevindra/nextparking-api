@@ -17,11 +17,18 @@ exports.getAllParkingTransactions = async (req, res) => {
                 is_done: status
             }
         })
-        res.status(200).send(transactions);
+        res.status(200).json({
+            status: 200,
+            message: 'Successfully get all transactions',
+            data: transactions
+        })
     } catch (e) {
         console.log(e)
         logger.error(e);
-        res.status(500).send();
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        })
     }
 }
 
@@ -32,11 +39,18 @@ exports.getSingleParkingTransactions = async (req, res) => {
     const {id_parking} = req.params
     try {
         const transaction = await prisma.parkings_transactions.findUnique({where: {id_parking: parseInt(id_parking)}})
-        res.status(200).send(transaction);
+        res.status(200).json({
+            status: 200,
+            message: 'Successfully get single transaction',
+            data: transaction
+        });
     } catch (e) {
         console.log(e)
         logger.error(e);
-        res.status(500).send();
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        })
     }
 }
 
@@ -87,10 +101,16 @@ exports.payParking = async (req, res) => {
             }
         })
 
-        res.status(200).send({response: 'done'})
+        res.status(200).json({
+            status: 200,
+            message: "Transaction successfully paid"
+        })
     } catch (e) {
         console.log(e)
-        return res.status(500).send()
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        })
     }
 }
 
