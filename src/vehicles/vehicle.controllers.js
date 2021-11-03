@@ -12,9 +12,9 @@ exports.registerVehicle = async (req, res) => {
             plate_number,
             car_type
         })
-        res.status(201).send({
-            'response': 'succeeded',
-            'data': {
+        res.status(201).json({
+            status: 201,
+            data: {
                 'id_user': id_user,
                 'plate_number': plate_number,
                 'car_type': car_type
@@ -30,11 +30,13 @@ exports.getAllVehicles = async (req, res) => {
     try {
         const vehicles = await prisma.vehicles.findMany()
         if (!vehicles) return res.status(404).send()
-        res.status(200).send(vehicles)
+        res.status(200).json({
+            status: 200,
+            data: vehicles
+        })
     } catch (e) {
-        console.log(e)
         logger.error(e);
-        res.status(500).send(e);
+        res.status(500).json({status: 500, message: 'Internal Server Error'});
     }
 }
 
@@ -45,11 +47,14 @@ exports.getUserVehicles = async (req, res) => {
             where:
                 {id_user: parseInt(id_user)}
         })
-        if (results === undefined) return res.status(404).send()
-        res.status(200).send(results);
+        if (!results) return res.status(404).json({status: 404, message: 'Vehicles is not found'})
+        res.status(200).json({
+            status: 200,
+            data: results
+        });
     } catch (e) {
         logger.error(e);
-        res.status(500).send();
+        res.status(500).json({status: 500, message: 'Internal Server Error'});
     }
 };
 
@@ -61,12 +66,12 @@ exports.getSingleVehicle = async (req, res) => {
                 id_vehicle: parseInt(id_vehicle)
             }
         })
-        if (!results) return res.status(404).send({'response': 'Vehicle not found.'})
-        res.status(200).send(results);
+        if (!results) return res.status(404).send({status: 404, response: 'Vehicle not found'})
+        res.status(200).json({status: 200, data: results});
     } catch (e) {
         console.log(e)
         logger.error(e);
-        res.status(500).send();
+        res.status(500).json({status: 500, message: 'Internal Server Error'});
     }
 };
 
@@ -80,9 +85,9 @@ exports.deleteVehicleById = async (req, res) => {
             }
         })
 
-        res.status(204).send({"response": 'success'});
+        res.status(204).json({status: 204, response: 'Vehicle deleted successfully.'});
     } catch (e) {
-        if (e.code === "P2025") return res.status(404).send({response: 'vehicle not found'})
-        res.status(500).send();
+        if (e.code === "P2025") return res.status(404).send({status: 404, message: 'Vehicle is not found'})
+        res.status(500).json({status: 500, message: 'Internal Server Error'});
     }
 };
