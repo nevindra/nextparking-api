@@ -45,12 +45,12 @@ const parkingRoutes = require('./src/parkings/parkings.routes');
 const bookingRoutes = require('./src/bookings/bookings.routes');
 const subRoutes = require('./src/subscriptions/subs.routes')
 
-app.use('/api/', userRoutes);
-app.use('/api/vehicles', vehicleRoutes);
-app.use('/api/uni', universityRoutes);
-app.use('/api/parkings', parkingRoutes);
-app.use('/api/bookings', bookingRoutes)
-app.use('/api/subs', subRoutes)
+app.use('/users', userRoutes);
+app.use('/vehicles', vehicleRoutes);
+app.use('/uni', universityRoutes);
+app.use('/parkings', parkingRoutes);
+app.use('/bookings', bookingRoutes)
+app.use('/subs', subRoutes)
 
 client.connect().then(_ => {
     logger.info(`⚡ Connected to Database ⚡`)
