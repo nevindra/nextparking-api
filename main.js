@@ -45,7 +45,7 @@ const parkingRoutes = require('./src/parkings/parkings.routes');
 const bookingRoutes = require('./src/bookings/bookings.routes');
 const subRoutes = require('./src/subscriptions/subs.routes')
 
-app.use('/api/users', userRoutes);
+app.use('/api/', userRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/uni', universityRoutes);
 app.use('/api/parkings', parkingRoutes);
