@@ -32,8 +32,9 @@ exports.getUsers = async (req, res) => {
 
 exports.getUserByID = async (req, res) => {
     const id_user = req.params.id;
+    console.log(id_user);
     try {
-        const user = await prisma.user.findUnique({
+        const user = await prisma.users.findUnique({
             where: {
                 id_user: parseInt(id_user),
             }
@@ -123,6 +124,7 @@ exports.loginUser = async (req, res) => {
         });
     } catch (e) {
         logger.error(e);
+        console.log(e)
         return res.status(500).json({
             status: 500,
             message: "Internal server error"
