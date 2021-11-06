@@ -23,7 +23,6 @@ exports.registerVehicle = async (req, res) => {
             }
         })
     } catch (e) {
-        logger.error(e);
         console.log(e)
         res.status(400).send(e);
     }

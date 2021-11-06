@@ -62,7 +62,7 @@ exports.getAllUniversity = async (req, res) => {
 }
 
 exports.getSingleUniversity = async (req, res) => {
-    const {id_place} = req.body
+    const id_place = req.params.id_university
 
     try {
         const result = await prisma.universities.findUnique({where: {id_place: parseInt(id_place)}})
@@ -71,6 +71,7 @@ exports.getSingleUniversity = async (req, res) => {
             data: result
         })
     } catch (e) {
+        console.log(e)
         logger.error(e);
         res.status(500).json({
             status: 500,

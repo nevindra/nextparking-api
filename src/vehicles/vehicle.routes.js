@@ -10,7 +10,6 @@ router.get('/:id_user/:id_vehicle', vehicleControllers.getSingleVehicle)
 
 // Non Resource URL:
 router.post('/register', vehicleControllers.registerVehicle);
-
 router.delete('/vehicles', vehicleControllers.deleteVehicleById)
 
 module.exports = router
