@@ -10,7 +10,7 @@ router.post('/verify-sms', userControllers.verifySMS)
 // router.patch('/users/:id', userControllers.editUser);
 router.delete('/:id', userControllers.deleteUser);
 
-router.get('', userControllers.getUsers);
+router.get('/', userControllers.getUsers);
 router.get('/:id', userControllers.getUserByID);
 
 module.exports = router;
