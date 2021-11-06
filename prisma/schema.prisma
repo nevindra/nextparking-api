@@ -34,7 +34,7 @@ model users {
 model vehicles {
   id_vehicle            Int                     @id(map: "user_vehicles_pk") @default(autoincrement())
   id_user               Int
-  plat_number           String                  @db.VarChar(10)
+  plate_number          String                  @db.VarChar(10)
   vehicle_type          String                  @db.VarChar(8)
   last_parking          String?                 @db.VarChar(32)
   users                 users                   @relation(fields: [id_user], references: [id_user], onDelete: Cascade, map: "user_vehicles_users_id_user_fk")

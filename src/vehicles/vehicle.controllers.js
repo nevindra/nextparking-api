@@ -4,24 +4,27 @@ const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.registerVehicle = async (req, res) => {
-    const {id_user, plate_number, car_type} = req.body
+    const {id_user, plate_number, vehicle_type} = req.body
 
     try {
         await prisma.vehicles.create({
-            id_user,
-            plate_number,
-            car_type
+            data: {
+                id_user: id_user,
+                plate_number: plate_number,
+                vehicle_type: vehicle_type
+            }
         })
         res.status(201).json({
             status: 201,
             data: {
                 'id_user': id_user,
                 'plate_number': plate_number,
-                'car_type': car_type
+                'car_type': vehicle_type
             }
         })
     } catch (e) {
         logger.error(e);
+        console.log(e)
         res.status(400).send(e);
     }
 };
