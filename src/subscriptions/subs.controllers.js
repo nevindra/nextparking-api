@@ -5,8 +5,20 @@ const prisma = new PrismaClient();
 
 exports.getSubsPlans = async (req, res) => {
     try {
-        const plans = await prisma.subs_plans.findMany()
-        res.status(200).send(plans)
+        const plans = await prisma.subs_plan.findMany()
+        if (plans) {
+            res.status(200).json({
+                status: 200,
+                message: 'Subscription plans fetched successfully',
+                data: plans
+            })
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: 'No subscription plans found',
+                data: []
+            })
+        }
     } catch (e) {
         console.log(e);
         res.status(500).send()
@@ -16,8 +28,20 @@ exports.getSubsPlans = async (req, res) => {
 exports.getSinglePlan = async (req, res) => {
     const {id_subs} = req.params
     try {
-        const plan = await prisma.subs_plans.find({where: {id_subs: parseInt(id_subs)}})
-        res.status(200).send(plan)
+        const plan = await prisma.subs_plan.findUnique({where: {id_subs: parseInt(id_subs)}})
+        if (plan) {
+            res.status(200).json({
+                status: 200,
+                message: 'Subscription plan fetched successfully',
+                data: plan
+            })
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: 'No subscription plan found',
+                data: []
+            })
+        }
     } catch (e) {
         console.log(e);
         res.status(500).send()
@@ -31,10 +55,26 @@ exports.getSubsPaymentHistory = async (req, res) => {
     const {id_user} = req.params
     try {
         const subs = await prisma.subs_transactions.findMany({where: {id_user: parseInt(id_user)}})
-        res.status(200).send(subs)
+        if (!subs) {
+            res.status(404).send({
+                status: 404,
+                message: 'No payment history found',
+                data: []
+            })
+        } else {
+            res.status(200).send({
+                status: 200,
+                message: 'Payment history fetched successfully',
+                data: subs
+            })
+        }
     } catch (e) {
         console.log(e)
-        res.status(500).send()
+        res.status(500).send({
+            status: 500,
+            message: 'Internal server error'
+        })
+
     }
 }
 
@@ -42,9 +82,24 @@ exports.getSubSingleHistory = async (req, res) => {
     const {id_subs} = req.params;
     try {
         const sub = await prisma.subs_transactions.findUnique({where: {id_subs: parseInt(id_subs)}})
-        res.status(200).send(sub)
+        if (sub) {
+            res.status(200).json({
+                status: 200,
+                message: 'Subscription payment history fetched successfully',
+                data: sub
+            })
+        } else {
+            res.status(404).json({
+                status: 404,
+                message: 'No subscription payment history found',
+                data: []
+            })
+        }
     } catch (e) {
         console.log(e);
-        res.status(500).send()
+        res.status(500).send({
+            status: 500,
+            message: "Internal server error"
+        })
     }
 }
