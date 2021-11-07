@@ -64,7 +64,7 @@ exports.postRegistration = async (req, res) => {
         const salt = bcrypt.genSaltSync(saltRounds);
         const encryptedPassword = bcrypt.hashSync(password, salt);
 
-        await prisma.users.create({
+        const user = await prisma.users.create({
             data: {
                 full_name,
                 email,
@@ -77,6 +77,7 @@ exports.postRegistration = async (req, res) => {
             status: 201,
             data: user
         });
+
     } catch (e) {
         if (e.code === "P2002") return res.status(409).send({
             status: 409,
