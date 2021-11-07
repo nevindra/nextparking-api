@@ -101,16 +101,19 @@ exports.loginUser = async (req, res) => {
         })
         if (!user) {
             return res.status(404).json({
+                status: '404',
                 message: "User not found"
             });
         }
         if (!user.activated) {
             return res.status(403).json({
+                status: '403',
                 message: "User is not activated"
             });
         }
         if (!bcrypt.compareSync(password, user.password)) {
             return res.status(401).json({
+                status: '401',
                 message: "Wrong password"
             });
         }
@@ -119,6 +122,7 @@ exports.loginUser = async (req, res) => {
         await prisma.users.update({where: {email}, data: {device_token, last_login: currentDate}})
         return res.status(200).json({
             status: 200,
+            message: "Login success",
             data: {
                 user
             }
