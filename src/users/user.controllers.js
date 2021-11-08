@@ -99,18 +99,14 @@ exports.loginUser = async (req, res) => {
                 email: email
             }
         })
+
         if (!user) {
             return res.status(404).json({
                 status: '404',
                 message: "User not found"
             });
         }
-        if (!user.activated) {
-            return res.status(403).json({
-                status: '403',
-                message: "User is not activated"
-            });
-        }
+
         if (!bcrypt.compareSync(password, user.password)) {
             return res.status(401).json({
                 status: '401',
