@@ -13,9 +13,15 @@ const {TokenExpiredError} = jwt;
 
 const catchError = (err, res) => {
     if (err instanceof TokenExpiredError) {
-        return res.status(403).send({message: "Unauthorized! Access Token was expired!"});
+        return res.status(403).send({
+            status: 403,
+            message: "Unauthorized! Access Token was expired!"
+        });
     }
-    return res.status(401).send({message: "Unauthorized!"});
+    return res.status(401).send({
+        status: 401,
+        message: "Token is not valid!"
+    });
 }
 
 const createRefreshToken = async (user) => {
@@ -121,8 +127,8 @@ const refreshToken = async (req, res) => {
     const {refreshToken} = req.body;
 
     if (!refreshToken) {
-        return res.status(403).json({
-            status: 403,
+        return res.status(401).json({
+            status: 401,
             message: "Refresh Token is required!"
         });
     }
@@ -134,8 +140,8 @@ const refreshToken = async (req, res) => {
             }
         })
         if (!refreshTokenData) {
-            return res.status(403).json({
-                status: 403,
+            return res.status(401).json({
+                status: 401,
                 message: "Refresh Token is not found!"
             });
         }

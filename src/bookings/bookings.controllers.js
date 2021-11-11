@@ -47,9 +47,8 @@ exports.bookParking = async (req, res) => {
 }
 
 exports.getAllBooking = async (req, res) => {
-    const id_user = req.params.id_user
     try {
-        const bookings = await prisma.bookings.findMany({where: {id_user: parseInt(id_user)}})
+        const bookings = await prisma.bookings.findMany({where: {id_user: parseInt(req.id_user)}})
         res.status(200).json({
             status: 200,
             data: bookings

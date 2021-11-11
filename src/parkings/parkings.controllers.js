@@ -8,12 +8,12 @@ exports.getAllParkingTransactions = async (req, res) => {
     * This part is to get all university parking transactions
     * either it's already paid or still active transactions
     * */
-    const id_user = req.params.id_user
+
     const {status} = req.body
     try {
         const transactions = await prisma.parkings_transactions.findMany({
             where: {
-                id_user: parseInt(id_user),
+                id_user: parseInt(req.id_user),
                 is_done: status
             }
         })

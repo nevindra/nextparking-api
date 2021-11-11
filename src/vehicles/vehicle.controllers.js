@@ -4,7 +4,7 @@ const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.registerVehicle = async (req, res) => {
-    const {id_user, plate_number, vehicle_type} = req.body
+    const {plate_number, vehicle_type} = req.body
 
     try {
         await prisma.vehicles.create({
@@ -43,7 +43,7 @@ exports.getAllVehicles = async (req, res) => {
 }
 
 exports.getUserVehicles = async (req, res) => {
-    const {id_user} = req.params
+
     try {
         const results = await prisma.vehicles.findMany({
             where:
@@ -99,12 +99,6 @@ exports.editVehicle = async (req, res) => {
     const {id_vehicle, plate_number, vehicle_name} = req.body
 
     try {
-        const vehicle = await prisma.vehicles.findUnique({
-            where: {
-                id_vehicle: parseInt(id_vehicle)
-            }
-        })
-
         if (plate_number && vehicle_name) {
             await prisma.vehicles.update({
                 where: {
@@ -134,7 +128,7 @@ exports.editVehicle = async (req, res) => {
                 }
             })
         }
-        const new_vehicle = await prisma.vehicles.findUnique({
+        const vehicle = await prisma.vehicles.findUnique({
             where: {
                 id_vehicle: parseInt(id_vehicle)
             }
