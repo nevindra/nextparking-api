@@ -9,7 +9,7 @@ exports.registerVehicle = async (req, res) => {
     try {
         await prisma.vehicles.create({
             data: {
-                id_user: id_user,
+                id_user: parseInt(req.id_user),
                 plate_number: plate_number,
                 vehicle_type: vehicle_type
             }
@@ -17,7 +17,7 @@ exports.registerVehicle = async (req, res) => {
         res.status(201).json({
             status: 201,
             data: {
-                'id_user': id_user,
+                'id_user': req.id_user,
                 'plate_number': plate_number,
                 'car_type': vehicle_type
             }
@@ -47,7 +47,7 @@ exports.getUserVehicles = async (req, res) => {
     try {
         const results = await prisma.vehicles.findMany({
             where:
-                {id_user: parseInt(id_user)}
+                {id_user: parseInt(req.id_user)}
         })
         if (!results) return res.status(404).json({status: 404, message: 'Vehicles is not found'})
         res.status(200).json({
@@ -55,6 +55,7 @@ exports.getUserVehicles = async (req, res) => {
             data: results
         });
     } catch (e) {
+        console.log(e)
         logger.error(e);
         res.status(500).json({status: 500, message: 'Internal Server Error'});
     }
@@ -87,9 +88,62 @@ exports.deleteVehicleById = async (req, res) => {
             }
         })
 
-        res.status(204).json({status: 204, response: 'Vehicle deleted successfully.'});
+        res.status(201).json({status: 201, response: 'Vehicle deleted successfully.'});
     } catch (e) {
         if (e.code === "P2025") return res.status(404).send({status: 404, message: 'Vehicle is not found'})
         res.status(500).json({status: 500, message: 'Internal Server Error'});
     }
 };
+
+exports.editVehicle = async (req, res) => {
+    const {id_vehicle, plate_number, vehicle_name} = req.body
+
+    try {
+        const vehicle = await prisma.vehicles.findUnique({
+            where: {
+                id_vehicle: parseInt(id_vehicle)
+            }
+        })
+
+        if (plate_number && vehicle_name) {
+            await prisma.vehicles.update({
+                where: {
+                    id_vehicle: parseInt(id_vehicle)
+                },
+                data: {
+                    plate_number: plate_number,
+                    vehicle_name: vehicle_name
+                }
+            })
+        } else if (plate_number) {
+            await prisma.vehicles.update({
+                where: {
+                    id_vehicle: parseInt(id_vehicle)
+                },
+                data: {
+                    plate_number: plate_number
+                }
+            })
+        } else if (vehicle_name) {
+            await prisma.vehicles.update({
+                where: {
+                    id_vehicle: parseInt(id_vehicle)
+                },
+                data: {
+                    vehicle_name: vehicle_name
+                }
+            })
+        }
+        const new_vehicle = await prisma.vehicles.findUnique({
+            where: {
+                id_vehicle: parseInt(id_vehicle)
+            }
+        })
+
+        res.status(201).json({status: 201, data: new_vehicle})
+    } catch (e) {
+        console.log(e)
+        logger.error(e);
+        res.status(500).json({status: 500, message: 'Internal Server Error'});
+    }
+}

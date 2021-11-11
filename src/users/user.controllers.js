@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const logger = require('../../config/logger')
 const {PrismaClient} = require('@prisma/client');
-
 const prisma = new PrismaClient();
 
 const accountSid = process.env.TWILIO_ACCOUNT_SID; // Your Account SID from www.twilio.com/console
@@ -9,10 +8,6 @@ const authToken = process.env.TWILIO_AUTH_TOKEN;   // Your Auth Token from www.t
 const client = require('twilio')(accountSid, authToken, {
     lazyLoading: true
 });
-
-function convertTZ(date, tzString) {
-    return new Date((typeof date === "string" ? new Date(date) : date).toLocaleString("en-US", {timeZone: tzString}));
-}
 
 exports.getUsers = async (req, res) => {
     try {
@@ -32,11 +27,10 @@ exports.getUsers = async (req, res) => {
 
 exports.getUserByID = async (req, res) => {
     const id_user = req.params.id;
-    console.log(id_user);
     try {
         const user = await prisma.users.findUnique({
             where: {
-                id_user: parseInt(id_user),
+                id_user: parseInt(req.id_user),
             }
         })
         if (!user) {
@@ -91,84 +85,54 @@ exports.postRegistration = async (req, res) => {
     }
 };
 
-exports.loginUser = async (req, res) => {
-    const {email, password, device_token} = req.body;
+exports.editUser = async (req, res) => {
+
+    const {full_name, phone_number, email} = req.body
+
     try {
-        const user = await prisma.users.findUnique({
+        let user = await prisma.users.findUnique({
             where: {
-                email: email
+                id_user: parseInt(req.id_user)
             }
         })
-
         if (!user) {
             return res.status(404).json({
                 status: '404',
                 message: "User not found"
             });
         }
-
-        if (!bcrypt.compareSync(password, user.password)) {
-            return res.status(401).json({
-                status: '401',
-                message: "Wrong password"
-            });
+        if (full_name) {
+            await prisma.users.update({
+                where: {
+                    id_user: parseInt(req.id_user)
+                },
+                data: {
+                    full_name: full_name
+                }
+            })
+        } else if (phone_number) {
+            await prisma.users.update({where: {id_user: parseInt(req.id_user)}, data: {phone_number}})
+        } else if (email) {
+            await prisma.users.update({where: {id_user: parseInt(req.id_user)}, data: {email}})
         }
-        const date = new Date()
-        const currentDate = convertTZ(date, "Asia/Jakarta")
-        await prisma.users.update({where: {email}, data: {device_token, last_login: currentDate}})
-        return res.status(200).json({
+        let newuser = await prisma.users.findUnique({
+            where: {
+                id_user: parseInt(req.id_user)
+            }
+        })
+        res.status(200).json({
             status: 200,
-            message: "Login success",
+            message: "User updated",
             data: {
-                user
+                newuser
             }
         });
     } catch (e) {
         logger.error(e);
         console.log(e)
-        return res.status(500).json({
-            status: 500,
-            message: "Internal server error"
-        });
+        res.status(400).send();
     }
 };
-
-exports.deleteUser = async (req, res) => {
-    const id_user = req.params.id
-    try {
-        await prisma.users.delete({where: {id_user: parseInt(id_user)}})
-        res.send({
-            'response': `User deleted with ID: ${id_user}`
-        })
-    } catch (e) {
-        logger.error(e);
-        if (e.code === "P2025") return res.status(404).send({status: 404, message: 'User not found'})
-        return res.status(500).json({
-            status: 500,
-            message: "Internal server error"
-        });
-    }
-};
-
-// exports.editUser = async (req, res) => {
-//     const id_user = req.params.id
-//     const {full_name, phone_number} = req.body
-//     let user;
-//     try {
-//         if (!full_name) {
-//             user = await repo.updatePhoneNumber(id_user, phone_number)
-//         } else if (!phone_number) {
-//             user = await repo.updateFullName(id_user, full_name)
-//         }
-//
-//         if (!user) return res.status(404).send();
-//
-//         res.send(`Updated user with ID: ${id_user}`)
-//     } catch (e) {
-//         logger.error(e);
-//         res.status(400).send();
-//     }
-// };
 
 exports.sendSMS = async (req, res) => {
     const {phone_number} = req.body

@@ -18,13 +18,14 @@ model company {
 model users {
   id_user               Int                     @id @default(autoincrement())
   full_name             String                  @db.VarChar(64)
-  phone_number          String                  @unique(map: "users_phone_number_uindex") @db.VarChar(12)
+  phone_number          String                  @db.VarChar(14)
   email                 String                  @unique(map: "unique_email") @db.VarChar(64)
   password              String                  @db.VarChar(64)
   activated             Boolean?                @default(false)
   last_login            DateTime?               @db.Timestamptz(6)
   device_token          String?                 @db.VarChar(180)
   bookings              bookings[]
+  jwt_token             jwt_token?
   parkings_transactions parkings_transactions[]
   quotas                quotas[]
   subs_transactions     subs_transactions[]
@@ -37,6 +38,8 @@ model vehicles {
   plate_number          String                  @db.VarChar(10)
   vehicle_type          String                  @db.VarChar(8)
   last_parking          String?                 @db.VarChar(32)
+  vehicle_brand         String?                 @db.VarChar(20)
+  vehicle_name          String?                 @db.VarChar(32)
   users                 users                   @relation(fields: [id_user], references: [id_user], onDelete: Cascade, map: "user_vehicles_users_id_user_fk")
   bookings              bookings[]
   parkings_transactions parkings_transactions[]
@@ -113,4 +116,12 @@ model subs_transactions {
   id_promo     Int?
   subs_plan    subs_plan? @relation(fields: [id_subs], references: [id_subs], map: "user_uni_parking_subs_plan_id_subs_fk")
   users        users?     @relation(fields: [id_user], references: [id_user], map: "user_uni_parking_users_id_user_fk")
+}
+
+model jwt_token {
+  id         Int       @id(map: "jwt_token_pk") @default(autoincrement())
+  token      String?   @unique(map: "jwt_token_token_uindex") @db.VarChar(250)
+  expired_at DateTime? @db.Date
+  id_user    Int?      @unique(map: "jwt_token_id_user_uindex")
+  users      users?    @relation(fields: [id_user], references: [id_user], map: "jwt_token_users_id_user_fk")
 }
