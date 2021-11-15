@@ -88,7 +88,7 @@ exports.deleteVehicleById = async (req, res) => {
             }
         })
 
-        res.status(201).json({status: 201, response: 'Vehicle deleted successfully.'});
+        res.status(200).json({status: 200, response: 'Vehicle deleted successfully.'});
     } catch (e) {
         if (e.code === "P2025") return res.status(404).send({status: 404, message: 'Vehicle is not found'})
         res.status(500).json({status: 500, message: 'Internal Server Error'});
@@ -134,7 +134,7 @@ exports.editVehicle = async (req, res) => {
             }
         })
 
-        res.status(201).json({status: 201, data: new_vehicle})
+        res.status(201).json({status: 201, data: vehicle})
     } catch (e) {
         console.log(e)
         logger.error(e);

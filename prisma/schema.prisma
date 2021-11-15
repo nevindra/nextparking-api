@@ -18,7 +18,7 @@ model company {
 model users {
   id_user               Int                     @id @default(autoincrement())
   full_name             String                  @db.VarChar(64)
-  phone_number          String                  @db.VarChar(14)
+  phone_number          String                  @unique(map: "users_phone_number_uindex") @db.VarChar(14)
   email                 String                  @unique(map: "unique_email") @db.VarChar(64)
   password              String                  @db.VarChar(64)
   activated             Boolean?                @default(false)
@@ -121,7 +121,7 @@ model subs_transactions {
 model jwt_token {
   id         Int       @id(map: "jwt_token_pk") @default(autoincrement())
   token      String?   @unique(map: "jwt_token_token_uindex") @db.VarChar(250)
-  expired_at DateTime? @db.Date
+  expired_at DateTime? @db.Timestamp(6)
   id_user    Int?      @unique(map: "jwt_token_id_user_uindex")
   users      users?    @relation(fields: [id_user], references: [id_user], map: "jwt_token_users_id_user_fk")
 }
