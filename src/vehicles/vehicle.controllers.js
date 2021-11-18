@@ -98,10 +98,10 @@ exports.deleteVehicleById = async (req, res) => {
 };
 
 exports.editVehicle = async (req, res) => {
-    const {id_vehicle, plate_number, vehicle_name} = req.body
+    const {id_vehicle, plate_number, vehicle_brand} = req.body
 
     try {
-        if (plate_number && vehicle_name) {
+        if (plate_number && vehicle_brand) {
             await prisma.vehicles.update({
                 where: {
                     id_vehicle: parseInt(id_vehicle)
@@ -120,13 +120,13 @@ exports.editVehicle = async (req, res) => {
                     plate_number: plate_number
                 }
             })
-        } else if (vehicle_name) {
+        } else if (vehicle_brand) {
             await prisma.vehicles.update({
                 where: {
                     id_vehicle: parseInt(id_vehicle)
                 },
                 data: {
-                    vehicle_name: vehicle_name
+                    vehicle_name: vehicle_brand
                 }
             })
         }
