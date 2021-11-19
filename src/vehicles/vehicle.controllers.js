@@ -108,7 +108,7 @@ exports.editVehicle = async (req, res) => {
                 },
                 data: {
                     plate_number: plate_number,
-                    vehicle_name: vehicle_name
+                    vehicle_brand: vehicle_brand
                 }
             })
         } else if (plate_number) {
