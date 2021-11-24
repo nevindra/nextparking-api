@@ -27,21 +27,35 @@ const catchError = (err, res) => {
 const createRefreshToken = async (user) => {
 
     let expiredAt = new Date();
-
     expiredAt.setSeconds(expiredAt.getSeconds() + parseInt(process.env.JWT_REFRESH_EXPIRES));
-
     const result = convertTZ(expiredAt, "Asia/Jakarta");
-
     let _token = uuid();
-
+    let refreshToken;
     try {
-        let refreshToken = await prisma.jwt_token.create({
-            data: {
-                token: _token,
-                expired_at: result,
+        const token = await prisma.jwt_token.findUnique({
+            where: {
                 id_user: user.id_user
             }
-        })
+        });
+        if (token) {
+            refreshToken = await prisma.jwt_token.update({
+                where: {
+                    id_user: user.id_user
+                },
+                data: {
+                    token: _token,
+                    expired_at: result,
+                }
+            });
+        } else {
+            refreshToken = await prisma.jwt_token.create({
+                data: {
+                    token: _token,
+                    expired_at: result,
+                    id_user: user.id_user
+                }
+            })
+        }
         return refreshToken.token;
     } catch (e) {
         if (e.code === "P2002") {
@@ -80,14 +94,12 @@ const loginUser = async (req, res) => {
                 email: email
             }
         })
-
         if (!user) {
             return res.status(404).json({
                 status: '404',
                 message: "User not found"
             });
         }
-
         if (!bcrypt.compareSync(password, user.password)) {
             return res.status(401).json({
                 status: '401',
@@ -103,7 +115,18 @@ const loginUser = async (req, res) => {
         }, process.env.JWT_ACCESS_SECRET, {
             expiresIn: parseInt(process.env.JWT_ACCESS_EXPIRES)
         });
-
+        const userJWT = await prisma.jwt_token.findUnique({
+            where: {
+                id_user: user.id_user
+            }
+        })
+        if (userJWT) {
+            await prisma.jwt_token.delete({
+                where: {
+                    id_user: user.id_user
+                }
+            })
+        }
         const refreshToken = await createRefreshToken(user);
         return res.status(200).json({
             status: 200,
@@ -113,9 +136,8 @@ const loginUser = async (req, res) => {
                 refreshToken
             }
         });
-
     } catch (e) {
-        // logger.error(e);
+        console.log(e)
         return res.status(403).json({
             status: '403',
             message: "Refresh Token already exists!"

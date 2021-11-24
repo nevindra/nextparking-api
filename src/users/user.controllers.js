@@ -26,7 +26,7 @@ exports.getUsers = async (req, res) => {
 };
 
 exports.getUserByID = async (req, res) => {
-    
+
     try {
         const user = await prisma.users.findUnique({
             where: {
@@ -88,9 +88,10 @@ exports.postRegistration = async (req, res) => {
 exports.editUser = async (req, res) => {
 
     const {full_name, phone_number, email} = req.body
-
+    let user;
+    let updatedUser;
     try {
-        let user = await prisma.users.findUnique({
+        user = await prisma.users.findUnique({
             where: {
                 id_user: parseInt(req.id_user)
             }
@@ -102,7 +103,7 @@ exports.editUser = async (req, res) => {
             });
         }
         if (full_name) {
-            await prisma.users.update({
+            updatedUser = await prisma.users.update({
                 where: {
                     id_user: parseInt(req.id_user)
                 },
@@ -111,20 +112,19 @@ exports.editUser = async (req, res) => {
                 }
             })
         } else if (phone_number) {
-            await prisma.users.update({where: {id_user: parseInt(req.id_user)}, data: {phone_number}})
+            updatedUser = await prisma.users.update({
+                where: {id_user: parseInt(req.id_user)},
+                data: {phone_number, activated: false}
+            })
         } else if (email) {
-            await prisma.users.update({where: {id_user: parseInt(req.id_user)}, data: {email}})
+            updatedUser = await prisma.users.update({where: {id_user: parseInt(req.id_user)}, data: {email}})
         }
-        let newuser = await prisma.users.findUnique({
-            where: {
-                id_user: parseInt(req.id_user)
-            }
-        })
+
         res.status(200).json({
             status: 200,
             message: "User updated",
             data: {
-                newuser
+                updatedUser
             }
         });
     } catch (e) {
@@ -144,7 +144,7 @@ exports.sendSMS = async (req, res) => {
 
         res.status(200).send({status: 200, message: 'success'})
     } catch (e) {
-        logger.error(e)
+        console.log(e);
         return res.status(500).json({
             status: 500,
             message: "Internal server error"
