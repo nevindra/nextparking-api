@@ -102,24 +102,85 @@ exports.editUser = async (req, res) => {
                 message: "User not found"
             });
         }
-        if (full_name) {
+
+        if (full_name && phone_number && email) {
             updatedUser = await prisma.users.update({
                 where: {
                     id_user: parseInt(req.id_user)
                 },
                 data: {
-                    full_name: full_name
+                    full_name,
+                    phone_number,
+                    email,
+                    activated: false
+                }
+            })
+        } else if (full_name && phone_number) {
+            updatedUser = await prisma.users.update({
+                where: {
+                    id_user: parseInt(req.id_user)
+                },
+                data: {
+                    full_name,
+                    phone_number,
+                    activated: false
+                }
+            })
+        } else if (full_name && email) {
+            updatedUser = await prisma.users.update({
+                where: {
+                    id_user: parseInt(req.id_user)
+                },
+                data: {
+                    full_name,
+                    email
+                }
+            })
+        } else if (phone_number && email) {
+            updatedUser = await prisma.users.update({
+                where: {
+                    id_user: parseInt(req.id_user)
+                },
+                data: {
+                    phone_number,
+                    email,
+                    activated: false
+                }
+            })
+        } else if (full_name) {
+            updatedUser = await prisma.users.update({
+                where: {
+                    id_user: parseInt(req.id_user)
+                },
+                data: {
+                    full_name
                 }
             })
         } else if (phone_number) {
             updatedUser = await prisma.users.update({
-                where: {id_user: parseInt(req.id_user)},
-                data: {phone_number, activated: false}
+                where: {
+                    id_user: parseInt(req.id_user)
+                },
+                data: {
+                    phone_number,
+                    activated: false
+                }
             })
         } else if (email) {
-            updatedUser = await prisma.users.update({where: {id_user: parseInt(req.id_user)}, data: {email}})
+            updatedUser = await prisma.users.update({
+                where: {
+                    id_user: parseInt(req.id_user)
+                },
+                data: {
+                    email
+                }
+            })
+        } else {
+            return res.status(400).json({
+                status: '400',
+                message: "Bad request"
+            });
         }
-
         res.status(200).json({
             status: 200,
             message: "User updated",

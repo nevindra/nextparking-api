@@ -4,26 +4,16 @@ const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.bookParking = async (req, res) => {
-    const {id_quota, id_user, id_place, id_vehicle, time_booking} = req.body
+    const {id_user, id_place, id_vehicle, time_booking} = req.body
 
     try {
-        const quota = await prisma.quotas.findUnique({where: {id_quota: parseInt(id_quota)}})
-        const vehicle = await prisma.vehicles.findUnique({where: {id_vehicle: parseInt(id_vehicle)}})
-
-        if (quota.vehicle_type !== vehicle.vehicle_type) {
-            return res.status(409).json({
-                status: 409,
-                message: 'Vehicle type does not match quota'
+        if (time_booking > Date.now() + 10800) {
+            return res.status(400).json({
+                status: 400,
+                success: false,
+                message: 'Time booking is too long'
             })
         }
-
-        if (quota.amount === 0) {
-            return res.status(409).json({
-                status: 409,
-                message: 'Quota is empty'
-            })
-        }
-
         await prisma.bookings.create({
             data: {
                 id_user: parseInt(id_user),
