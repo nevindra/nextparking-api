@@ -35,7 +35,7 @@ model users {
 model vehicles {
   id_vehicle            Int                     @id(map: "user_vehicles_pk") @default(autoincrement())
   id_user               Int
-  plate_number          String                  @db.VarChar(10)
+  plate_number          String                  @unique(map: "vehicles_plate_number_uindex") @db.VarChar(10)
   vehicle_type          String                  @db.VarChar(8)
   last_parking          String?                 @db.VarChar(32)
   vehicle_brand         String?                 @db.VarChar(20)

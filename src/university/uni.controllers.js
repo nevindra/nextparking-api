@@ -5,7 +5,7 @@ const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.searchUniversity = async (req, res) => {
-    const {search} = req.body
+    const search = req.query.search;
     try {
         const result = await prisma.universities.findMany({
             where: {
@@ -27,16 +27,33 @@ exports.searchUniversity = async (req, res) => {
     }
 }
 
+// get all university
 exports.getAllUniversity = async (req, res) => {
-    const universities = await prisma.universities.findMany();
-    let destinations = [];
-
-    for (let uni of universities) {
-        destinations.push(uni.address)
+    try {
+        const result = await prisma.universities.findMany()
+        res.status(200).json({
+            status: 200,
+            data: result
+        })
+    } catch (e) {
+        console.log(e);
+        res.status(500).json({
+            status: 500,
+            message: "Internal server error"
+        })
     }
+}
 
-    let origins = ["-6.538755,106.8101117"];
-
+exports.getUniversityDistance = async (req, res) => {
+    const {long, lat} = req.body
+    let origins = [];
+    // combine lat and long to string with comma and then push to origins array
+    origins.push(`${lat},${long}`);
+    let destinations = [];
+    const universities = await prisma.universities.findMany();
+    universities.forEach(university => {
+        destinations.push(university.address)
+    });
     const client = new Client({});
     try {
         const results = await client.distancematrix({
@@ -47,13 +64,22 @@ exports.getAllUniversity = async (req, res) => {
             }
         })
         let locations = results.data.rows[0].elements
-        let sorted = locations.sort((a, b) => a.distance.value - b.distance.value);
+        // add data from locations and destinations to new array
+        let universities = [];
+        locations.forEach(location => {
+            universities.push({
+                distance: location.distance.text,
+                duration: location.duration.text,
+                university: destinations[locations.indexOf(location)]
+            })
+        })
+        let sorted = universities.sort((a, b) => a.distance.value - b.distance.value);
         res.status(200).json({
             status: 200,
             data: sorted
         })
     } catch (e) {
-        logger.error(e);
+        console.log(e);
         res.status(500).json({
             status: 500,
             message: "Internal server error"
@@ -63,7 +89,6 @@ exports.getAllUniversity = async (req, res) => {
 
 exports.getSingleUniversity = async (req, res) => {
     const id_place = req.params.id_university
-
     try {
         const result = await prisma.universities.findUnique({where: {id_place: parseInt(id_place)}})
         res.status(200).json({

@@ -7,13 +7,18 @@ exports.bookParking = async (req, res) => {
     const {id_user, id_place, id_vehicle, time_booking} = req.body
 
     try {
-        if (time_booking > Date.now() + 10800) {
+        // if time booking is more than 3 hours from current time, return error
+        const currentTime = new Date();
+        const bookingTime = new Date(time_booking);
+        const diff = bookingTime.getTime() - currentTime.getTime();
+        const diffHours = diff / (1000 * 3600);
+        if (diffHours > 3) {
             return res.status(400).json({
                 status: 400,
-                success: false,
-                message: 'Time booking is too long'
+                message: 'Time booking is more than 3 hours from current time'
             })
         }
+
         await prisma.bookings.create({
             data: {
                 id_user: parseInt(id_user),
