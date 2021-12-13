@@ -26,7 +26,10 @@ exports.registerVehicle = async (req, res) => {
         })
     } catch (e) {
         console.log(e)
-        res.status(400).send(e);
+        res.status(500).json({
+            status: 500,
+            message: 'Internal server error'
+        })
     }
 };
 

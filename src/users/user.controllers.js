@@ -86,7 +86,6 @@ exports.postRegistration = async (req, res) => {
 };
 
 exports.editUser = async (req, res) => {
-
     const {full_name, phone_number, email} = req.body
     let user;
     let updatedUser;
@@ -216,6 +215,7 @@ exports.sendSMS = async (req, res) => {
 
 exports.verifySMS = async (req, res) => {
     const {phone_number, token} = req.body
+    console.log(p)
     const phone = '+62' + phone_number.substring(1);
     try {
         const result = await client.verify.services(process.env.TWILIO_SERVICE_ID)

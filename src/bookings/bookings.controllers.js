@@ -4,33 +4,59 @@ const {PrismaClient} = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.bookParking = async (req, res) => {
-    const {id_user, id_place, id_vehicle, time_booking} = req.body
+    const {place, plate_number, time_booking} = req.body;
+    const id_user = parseInt(req.id_user);
 
     try {
         // if time booking is more than 3 hours from current time, return error
-        const currentTime = new Date();
-        const bookingTime = new Date(time_booking);
-        const diff = bookingTime.getTime() - currentTime.getTime();
-        const diffHours = diff / (1000 * 3600);
-        if (diffHours > 3) {
+        const current_time = new Date();
+        current_time.setHours(current_time.getHours() + 7);
+        const time_booking_date = new Date(time_booking);
+        time_booking_date.setHours(time_booking_date.getHours() + 7);
+        if (time_booking_date.getTime() - current_time.getTime() > 10800000) {
             return res.status(400).json({
-                status: 400,
                 message: 'Time booking is more than 3 hours from current time'
+            });
+        } else if (time_booking_date.getTime() - current_time.getTime() < 0) {
+            return res.status(400).json({
+                message: 'Time booking is less than current time'
+            });
+        }
+        const uni = await prisma.universities.findUnique({
+            where: {
+                name: place
+            }
+        });
+        if (!uni) {
+            return res.status(404).json({
+                status: 404,
+                message: 'University not found'
             })
         }
-
+        const vehicle = await prisma.vehicles.findUnique({
+            where: {
+                plate_number: plate_number
+            }
+        });
+        if (vehicle.id_user !== id_user) {
+            return res.status(403).json({
+                status: 403,
+                message: 'You are not allowed to book this vehicle'
+            })
+        }
         await prisma.bookings.create({
             data: {
-                id_user: parseInt(id_user),
-                id_place: parseInt(id_place),
-                id_vehicle: id_vehicle,
-                time_booking: time_booking
+                id_user: id_user,
+                id_place: uni.id_place,
+                id_vehicle: vehicle.id_vehicle,
+                time_booking: time_booking_date
             }
-        })
+        });
+
         res.status(201).json({
             status: 201,
             message: 'Booking created'
-        })
+        });
     } catch (e) {
         console.log(e)
         logger.error(e);

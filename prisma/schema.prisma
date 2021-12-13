@@ -48,7 +48,7 @@ model vehicles {
 model universities {
   id_place       Int        @id(map: "places_pk") @default(autoincrement())
   id_company     Int?
-  name           String?    @db.VarChar(32)
+  name           String?    @unique(map: "universities_name_uindex") @db.VarChar(32)
   address        String?    @db.VarChar(64)
   longitude      String?    @db.VarChar(16)
   latitude       String?    @db.VarChar(16)
@@ -63,7 +63,7 @@ model bookings {
   id_user      Int
   id_vehicle   Int
   id_place     Int
-  time_booking DateTime?    @default(now()) @db.Timestamptz(6)
+  time_booking DateTime?    @db.Timestamp(6)
   status       String?      @default("BOOKED") @db.VarChar(10)
   universities universities @relation(fields: [id_place], references: [id_place], onDelete: SetNull, map: "bookings_places_id_place_fk")
   users        users        @relation(fields: [id_user], references: [id_user], onDelete: Cascade, map: "bookings_users_id_user_fk")
