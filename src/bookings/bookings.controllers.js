@@ -12,7 +12,9 @@ exports.bookParking = async (req, res) => {
         const current_time = new Date();
         current_time.setHours(current_time.getHours() + 7);
         const time_booking_date = new Date(time_booking);
-        time_booking_date.setHours(time_booking_date.getHours() + 7);
+        if (process.env.NODE_ENV === 'development') {
+            time_booking_date.setHours(time_booking_date.getHours() + 7);
+        }
         if (time_booking_date.getTime() - current_time.getTime() > 10800000) {
             return res.status(400).json({
                 message: 'Time booking is more than 3 hours from current time'
