@@ -8,6 +8,17 @@ exports.bookParking = async (req, res) => {
     const id_user = parseInt(req.id_user);
 
     try {
+        // check if plate_number is already exist in bookings, if exist return error
+        const checkPlateNumber = await prisma.bookings.findUnique({
+            where: {
+                plate_number: plate_number
+            }
+        });
+        if (checkPlateNumber) {
+            return res.status(409).json({
+                message: 'Plate number is already exist in bookings'
+            });
+        }
         // if time booking is more than 3 hours from current time, return error
         const current_time = new Date();
         current_time.setHours(current_time.getHours() + 7);
@@ -54,7 +65,6 @@ exports.bookParking = async (req, res) => {
                 time_booking: time_booking_date
             }
         });
-
         res.status(201).json({
             status: 201,
             message: 'Booking created'
@@ -72,7 +82,7 @@ exports.bookParking = async (req, res) => {
 exports.getAllBooking = async (req, res) => {
     try {
         const id_user = parseInt(req.id_user);
-        const bookings = await prisma.$queryRaw`SELECT id_booking, bookings.id_user, plate_number, time_booking, name as place FROM bookings
+        const bookings = await prisma.$queryRaw`SELECT id_booking, bookings.id_user, plate_number, time_booking, name as place, address FROM bookings
     JOIN vehicles v on bookings.id_vehicle = v.id_vehicle
     JOIN universities u on bookings.id_place = u.id_place
     WHERE bookings.id_user = ${id_user}`;
@@ -81,7 +91,7 @@ exports.getAllBooking = async (req, res) => {
             data: bookings
         })
     } catch (e) {
-        logger.error(e);
+        console.log(e)
         res.status(500).json({
             status: 500,
             message: 'Internal server error'
