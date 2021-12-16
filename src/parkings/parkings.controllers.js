@@ -8,18 +8,17 @@ exports.getAllParkingTransactions = async (req, res) => {
     * This part is to get all university parking transactions
     * either it's already paid or still active transactions
     * */
-    const {is_done} = req.body
+    const {status} = req.body
     try {
-        const transactions = await prisma.parkings_transactions.findMany({
-            where: {
-                id_user: parseInt(req.id_user),
-                is_done: is_done
-            }
-        })
+        const result = await prisma.$queryRaw`
+    SELECT id_parking, address, time_in, plate_number FROM parkings_transactions pt
+    JOIN vehicles v on pt.id_vehicle = v.id_vehicle
+    JOIN universities u on pt.id_place = u.id_place
+    WHERE pt.id_user = 146 AND pt.is_done = ${status}`
         res.status(200).json({
             status: 200,
             message: 'Successfully get all transactions',
-            data: transactions
+            data: result
         })
     } catch (e) {
         console.log(e)
@@ -37,11 +36,16 @@ exports.getSingleParkingTransactions = async (req, res) => {
     * */
     const {id_parking} = req.params
     try {
-        const transaction = await prisma.parkings_transactions.findUnique({where: {id_parking: parseInt(id_parking)}})
+        const transaction = await prisma.$queryRaw`
+    SELECT id_parking, plate_number, time_in, time_out, name as university , address FROM parkings_transactions pt
+    JOIN vehicles v on pt.id_vehicle = v.id_vehicle
+    JOIN universities u on pt.id_place = u.id_place
+    WHERE pt.id_parking = ${parseInt(id_parking)}`
+
         res.status(200).json({
             status: 200,
             message: 'Successfully get single transaction',
-            data: transaction
+            data: transaction[0]
         });
     } catch (e) {
         console.log(e)
