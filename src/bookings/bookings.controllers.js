@@ -9,14 +9,20 @@ exports.bookParking = async (req, res) => {
 
     try {
         // check if plate_number is already exist in bookings, if exist return error
-        const checkPlateNumber = await prisma.bookings.findUnique({
+        const vehicle = await prisma.vehicles.findUnique({
             where: {
                 plate_number: plate_number
             }
         });
-        if (checkPlateNumber) {
-            return res.status(409).json({
-                message: 'Plate number is already exist in bookings'
+        const checkPlateNumber = await prisma.bookings.findMany({
+            where: {
+                id_vehicle: vehicle.id_vehicle,
+                status: 'BOOKED'
+            }
+        });
+        if (checkPlateNumber.length > 0) {
+            return res.status(400).json({
+                message: 'Plate number is already booked'
             });
         }
         // if time booking is more than 3 hours from current time, return error
@@ -46,11 +52,6 @@ exports.bookParking = async (req, res) => {
                 message: 'University not found'
             })
         }
-        const vehicle = await prisma.vehicles.findUnique({
-            where: {
-                plate_number: plate_number
-            }
-        });
         if (vehicle.id_user !== id_user) {
             return res.status(403).json({
                 status: 403,
