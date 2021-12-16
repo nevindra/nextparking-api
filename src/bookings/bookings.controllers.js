@@ -126,8 +126,11 @@ exports.deleteBooking = async (req, res) => {
             message: 'Booking deleted'
         })
     } catch (e) {
-        if (e.code === "P2025") res.status(404).send({response: 'not found.'})
-        logger.error(e)
+        if (e.code === "P2025") return res.status(404).send({
+            status: 404,
+            response: 'not found.'
+        })
+        console.log(e)
         res.status(500).json({
             status: 500,
             message: 'Internal server error'
