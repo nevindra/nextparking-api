@@ -11,15 +11,22 @@ exports.getAllParkingTransactions = async (req, res) => {
     const {status} = req.body
     try {
         const result = await prisma.$queryRaw`
-    SELECT id_parking, address, time_in, plate_number FROM parkings_transactions pt
+    SELECT id_parking, address, time_in, plate_number, name as university FROM parkings_transactions pt
     JOIN vehicles v on pt.id_vehicle = v.id_vehicle
     JOIN universities u on pt.id_place = u.id_place
     WHERE pt.id_user = 146 AND pt.is_done = ${status}`
-        res.status(200).json({
-            status: 200,
-            message: 'Successfully get all transactions',
-            data: result
-        })
+        if (result.length > 0) {
+            return res.status(200).json({
+                status: 200,
+                message: 'Successfully fetched all parking transactions',
+                data: result
+            })
+        } else {
+            return res.status(404).json({
+                status: 404,
+                message: 'No parking transactions found'
+            })
+        }
     } catch (e) {
         console.log(e)
         logger.error(e);
@@ -41,12 +48,18 @@ exports.getSingleParkingTransactions = async (req, res) => {
     JOIN vehicles v on pt.id_vehicle = v.id_vehicle
     JOIN universities u on pt.id_place = u.id_place
     WHERE pt.id_parking = ${parseInt(id_parking)}`
-
-        res.status(200).json({
-            status: 200,
-            message: 'Successfully get single transaction',
-            data: transaction[0]
-        });
+        if (transaction.length > 0) {
+            return res.status(200).json({
+                status: 200,
+                message: 'Successfully get single transaction',
+                data: transaction[0]
+            })
+        } else {
+            return res.status(404).json({
+                status: 404,
+                message: 'Transaction not found'
+            })
+        }
     } catch (e) {
         console.log(e)
         logger.error(e);
