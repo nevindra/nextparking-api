@@ -8,7 +8,10 @@ exports.getAllParkingTransactions = async (req, res) => {
     * This part is to get all university parking transactions
     * either it's already paid or still active transactions
     * */
-    const {status} = req.body
+    const statusQuery = req.query.status
+    let status;
+    // check if status is true or false
+    statusQuery === 'true' ? status = true : status = false;
     try {
         const result = await prisma.$queryRaw`
     SELECT id_parking, address, time_in, plate_number, name as university FROM parkings_transactions pt
