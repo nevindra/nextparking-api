@@ -86,7 +86,7 @@ exports.getAllBooking = async (req, res) => {
         const bookings = await prisma.$queryRaw`SELECT id_booking, bookings.id_user, plate_number, time_booking, name as place, address FROM bookings
     JOIN vehicles v on bookings.id_vehicle = v.id_vehicle
     JOIN universities u on bookings.id_place = u.id_place
-    WHERE bookings.id_user = ${id_user}`;
+    WHERE bookings.id_user = ${id_user} AND bookings.status = 'BOOKED'`;
         res.status(200).json({
             status: 200,
             data: bookings
