@@ -21,7 +21,7 @@ exports.bookParking = async (req, res) => {
             }
         });
         if (checkPlateNumber.length > 0) {
-            return res.status(400).json({
+            return res.status(409).json({
                 message: 'Plate number is already booked'
             });
         }
@@ -33,11 +33,11 @@ exports.bookParking = async (req, res) => {
             time_booking_date.setHours(time_booking_date.getHours() + 7);
         }
         if (time_booking_date.getTime() - current_time.getTime() > 10800000) {
-            return res.status(409).json({
+            return res.status(400).json({
                 message: 'Time booking is more than 3 hours from current time'
             });
         } else if (time_booking_date.getTime() - current_time.getTime() < 0) {
-            return res.status(409).json({
+            return res.status(400).json({
                 message: 'Time booking is less than current time'
             });
         }
